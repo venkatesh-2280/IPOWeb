@@ -195,6 +195,15 @@
                             <option value="Non ASBA">Non ASBA</option>
                         </select>
                     </div>
+                    <div id="rightsissuerow" class="col-sm-3" style="display:none">
+                        <label class="form-label" for="bank" data-field="bank">Select Category</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
+                        <select id="rightissue" class="form-select">
+                            <option value="">-- Select Category -- </option>
+                            <option value="NSDL">NSDL</option>
+                            <option value="CDSL">CDSL</option>
+                            <option value="Physical">Physical</option>
+                        </select>
+                    </div>
                     <div id="bankrow" class="col-sm-3" style="display: none;">
                         <label class="form-label" for="bank" data-field="bank">Select Bank</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
                         <select id="bank" class="form-select">
@@ -206,6 +215,37 @@
                     </div>
                     <div class="col-sm-3">
                         <button type="button" class="btn btn-primary" id="btnStart" onclick="startprocess()" style="padding: 3px 25px;margin-top:28px;width:40%;margin-right:10px;">Start</button>
+                    </div>                   
+                </div>
+
+                <div class="row" id="rilists" style="margin-top:20px; display:none;">
+                    <div class="col-sm-3">
+                        <table class="table table-bordered table-sm">
+                            <thead style="background-color:#365b9f; color:#fff;">
+                                <tr>
+                                    <td>Bendem Files</td>
+                                    <td>Total</td>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>NSDL</td>
+                                    <td>10000</td>                                    
+                                </tr>
+                                <tr>
+                                    <td>CDSL</td>
+                                    <td>5000</td>                                    
+                                </tr>
+                                <tr>
+                                    <td>Physical</td>
+                                    <td>10000</td>                                    
+                                </tr>
+                                <tr>
+                                    <td>Over All Total</td>
+                                    <td>25000</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -349,11 +389,13 @@
 <script>
          var selectedPipeline = "";
         var selectedDataset = "";
+        var iponames = "";
                  $(document).ready(function () {
             $('#navhead').text('File Import');
            var ipoName = localStorage.getItem("selectedIPOText");
             var ipocode = localStorage.getItem("selectedIPO");
             var savedIPO = localStorage.getItem("selectedIPO");
+            iponames = localStorage.getItem("selectedIPOText");
             console.log("IPO Name:", ipoName);
             console.log("IPO Code:", ipocode);
             console.log("savedIPO:", savedIPO);
@@ -373,6 +415,13 @@
             tab.show();
             $("#datasetList").show();
         });
+
+        if (iponames && iponames.includes("- Rights Issue")) {
+            $("#rilists").show();
+        } else {
+            $("#rilists").hide();
+        }
+
     });
 
 
@@ -497,11 +546,34 @@
                         value: '',
                         text: '-- Select --'
                     })
-                );
+                );              
+
                 // ✅ Filter only Active pipelines
                 var activePipelines = data.filter(function (item) {
                     return item.pipeline_status === "Active";
                 });
+
+                 console.log("IPO Name:", iponames);
+
+                if (iponames && iponames.includes("- Rights Issue")) {
+
+                // Rights Issue → show ONLY Rights Offer
+                var rightsOffer = activePipelines.filter(function (item) {
+                    return item.pipeline_name === "Rights Offer";
+                });
+
+                $.each(rightsOffer, function (i, item) {
+                    $("#pipeline").append(
+                        $('<option>', {
+                            value: item.pipeline_code,
+                            text: item.pipeline_name
+                        })
+                    );
+                });
+
+            } else {
+
+                // Normal IPO → show all active pipelines
                 $.each(activePipelines, function (i, item) {
                     $("#pipeline").append(
                         $('<option>', {
@@ -510,7 +582,9 @@
                         })
                     );
                 });
-                console.log(activePipelines);
+            }
+
+            console.log("Active Pipelines:", activePipelines);
             },
             error: function (xhr) {
                 console.log("Error:", xhr.responseText);
@@ -654,6 +728,7 @@
                     }
 
                     var data = response.data;
+                    console.log("RI : ", data);
                     $("#dataset").empty();
                     var hasBankFile = data.some(function (item) {
                         return item.dataset_name === "Bank File";
@@ -674,11 +749,25 @@
                                    item.dataset_name.includes("non ASBA")
                                );
                     });
+                    var hasRightsissue = data.some(function (item) {
+                        return item.dataset_name &&
+                               (
+                                   item.dataset_name.includes("Rights")
+                               );
+                    });
                   if (hasBankFile || hasCategory) {
                         $("#categoryrow").show();
                     }
                     else {
                         $("#categoryrow").hide();
+                    }
+
+                    if(hasRightsissue) {
+                        $("#rightsissuerow").show();
+                        $("#categoryrow").hide();
+                    } else {
+                        $("#categoryrow").show();
+                        $("#rightsissuerow").hide();
                     }
                     $.each(data, function (i, item) {
                         $("#dataset").append(
