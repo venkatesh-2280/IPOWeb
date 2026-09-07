@@ -1,0 +1,619 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    var userName = Context.Session.GetString("user_name");
+    var role_code = Context.Session.GetString("user_role");
+    var userCode = Context.Session.GetString("user_code");
+    var menuJson = Context.Session.GetString("UserMenus");
+    var menus = new List<MenuModel>();
+
+    if (!string.IsNullOrEmpty(menuJson))
+    {
+        menus = System.Text.Json.JsonSerializer.Deserialize<List<MenuModel>>(menuJson);
+    }
+
+    var currentPath = Context.Request.Path.Value.ToLower();
+    var normalizedPath = currentPath.Trim('/').ToLower();
+    var currentMenu = menus?.FirstOrDefault(x =>
+        (x.menu_url ?? "")
+            .Replace("../", "")
+            .Trim('/')
+            .ToLower() == normalizedPath
+    );
+
+    var getBoaMenu = menus?.FirstOrDefault(x =>
+        (x.menu_url ?? "")
+            .Replace("../", "")
+            .Trim('/')
+            .ToLower() == "boa/boa"
+    );
+
+    var menuId = currentMenu?.menu_id;
+    var addPerm = currentMenu?.add_perm;
+    var modPerm = currentMenu?.mod_perm;
+    var viewPerm = currentMenu?.view_perm;
+    var delPerm = currentMenu?.delete_perm;
+    var Boachecklist = getBoaMenu?.Boachecklist_perm;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>IPO Summary</title>
+    <style>
+        h5#navhead {
+            position: relative;
+            right: 428px;
+            width: 56%;
+            font-size: 14px !important;
+        }
+        .k-grid-content {
+            height:100px !important;
+        }
+        .k-grid {
+            font-size: 12px;
+        }
+
+            .k-grid td {
+                padding: 4px 6px !important;
+            }
+
+        .k-grid-header th.k-header {
+            font-weight: 600;
+            text-align: center;
+        }
+
+
+
+        .k-grid.k-widget {
+            height: auto !important;
+            overflow-y: auto;
+        }
+
+        .fw-bold { 
+            font-size:13px !important;
+            color:#000;
+        }
+
+        td {
+            color: #000;
+        }       
+
+        .k-grid {
+            background: #fff !important;
+            border-color: #dee2e6;
+            font-size: 12px;
+        }
+
+        .k-grid-content {
+            background: #fff !important;
+        }
+
+        .k-grid-header {
+            background: #fff !important;
+        }
+
+            .k-grid-header th.k-header {               
+                color: #000;
+                font-weight: 600;
+                text-align: center;
+            }
+
+        .k-grid td {
+            background: #fff !important;
+            padding: 4px 6px !important;
+        }
+
+        .k-grid tr {
+            background: #fff !important;
+        }
+
+        #summaryGrid {
+            height: 115px !important;
+            overflow: hidden !important;
+        }
+
+        #rejectionList table {
+            width: 100% !important;
+        }
+   
+    </style>
+
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini fixed">
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="card-body" style="margin-top:5px;height: 556px;width: 103%;margin-left: -18px;">
+                <input type="hidden" id="ipocode" />
+                <input type="hidden" id="cid" />
+                <div class="row" style="margin-top:-20px;">                    
+                     <div class="col-sm-12">
+                        <div id="totalBidsGrid"></div>
+                        @* <br /> *@
+                        @* <div id="invalidBidsGrid"></div> *@                         
+                    </div>                   
+                </div>
+                <div class="row" style="margin-top: -5px;margin-bottom: -5px;">
+                    <div class="col-sm-2">
+                        <h5 style="font-size: 13px !important;font-weight: 700;color:#000;float: left;margin-left: 3px !important;">
+                            Rejections
+                        </h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">                      
+                        <div id="rejectionList"></div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: -3px;">
+                    <div class="col-sm-2">
+                        <h5 style="font-size: 13px !important;font-weight: 700;color:#000;float: left;margin-left: 3px !important; margin-top:5px !important; margin-bottom:5px !important;">
+                            Available For Allotment
+                        </h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="summaryGrid"></div>
+                    </div>
+                </div>
+             </div>
+         </div>
+         </div>
+    </body>
+
+</html>
+
+ <script>
+    var mainGridData = [];
+    var rejectionGridData = [];
+    var summaryExtraRows = [];
+    $( document ).ready(function() {                          
+             var ipocode = localStorage.getItem("selectedIPO");
+             var clientid = localStorage.getItem("selectedClientId");
+             var cid = localStorage.getItem("selectedIPOText");
+             $("#ipocode").val(ipocode);
+             $("#clientid").val(clientid);    
+             $("#cid").val(cid);    
+             var ipo_codes = $("#ipocode").val();
+            var cids = $("#cid").val();
+            $('#navhead').text(cids + ' - IPO Summary');             
+             BidSummary();
+            runrecon(false);
+            var boaChecklist = '@Boachecklist';
+            var getnormalizedPath = '@normalizedPath';
+            if(boaChecklist == "Y") {
+                   updateboaVisit(getnormalizedPath);
+            }
+        });
+
+    function BidSummary() {
+        var ipo_code = $("#ipocode").val();
+
+        try {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Getbidfilecountsummary", "BidSummary")',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: { ipo_code: ipo_code },
+
+                success: function (response) {
+
+                    var parsedData = JSON.parse(response.data);
+                    var tableData = parsedData.Table;
+
+                    var totalBids = [];
+                    var invalidBids = [];
+                    var currentSection = "";
+
+                    // Reset summary extra rows
+                    summaryExtraRows = [];
+
+                    $.each(tableData, function (i, item) {
+
+                        if (item.Flag === "Total BIDS") {
+                            currentSection = "TOTAL";
+                            return;
+                        }
+
+                        if (item.Flag === "Rejected By Exchange") {
+                            currentSection = "INVALID";
+                            return;
+                        }
+
+                        if (item.Flag === "") {
+                            return;
+                        }
+
+                        if (currentSection === "TOTAL") {
+                            totalBids.push(item);
+                        }
+
+                        if (currentSection === "INVALID") {
+                            invalidBids.push(item);
+                        }
+                    });
+
+
+                    // Move Offer Size and Over Subscription Ratio
+                    totalBids = totalBids.filter(function (item) {
+
+                        if (
+                            item.Flag === "Offer Size" ||
+                            item.Flag === "Over Subscription Ratio"
+                        ) {
+
+                            summaryExtraRows.push({
+                                type: item.Flag,
+                                appl: item.Total_APPL_NO,
+                                qty: item.total_quantity,
+                                amt: item.total_amount
+                            });
+
+                            return false;
+                        }
+
+                        return true;
+                    });
+
+
+                    console.log("Total Bids:", totalBids);
+                    console.log("Summary Extra Rows:", summaryExtraRows);
+
+
+                    // Main Grid
+                    mainGridData = totalBids;
+
+                    loadGrid(
+                        "#totalBidsGrid",
+                        totalBids,
+                        "Total BIDS",
+                        true
+                    );
+
+                    // Rejection Grid
+                    loadGrid(
+                        "#invalidBidsGrid",
+                        invalidBids,
+                        "Rejected By Exchange",
+                        false
+                    );
+
+                    // Load Summary
+                    checkAndLoadSummary();
+                }
+            });
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    
+
+
+
+    function loadGrid(gridId, data, title, showRatioColumn) {
+        var columns = [
+            {
+                field: "Flag",
+                title: "Details",
+                width: 215
+            },
+            {
+                field: "Total_APPL_NO",
+                title: "No. Of Appl", 
+                 width: 213,
+                attributes: { style: "text-align:right;" },
+                template: "#= formatNumber(Total_APPL_NO) #"
+            },
+            {
+                field: "total_quantity",
+                title: "No.Of Shares",     
+                 width: 265,
+                attributes: { style: 'text-align:right;' },
+                template: "#= formatNumber(total_quantity) #"
+            },
+            {
+                field: "total_amount",
+                title: "Amount",      
+                 width: 315,
+                attributes: { style: 'text-align:right;' },
+                template: "#= formatNumber(total_amount) #"
+            }
+        ];
+        $(gridId).kendoGrid({
+            dataSource: {
+                data: data
+            },
+            sortable: false,
+            scrollable: false,
+            resizable: true,
+            noRecords: true,
+            messages: {
+                noRecords: "No data available"
+            },
+            columns: columns,
+                    dataBound: function (e) {
+                    var grid = e.sender;
+                grid.tbody.find("tr").each(function () {
+                var dataItem = grid.dataItem(this);
+                    if (["TOTAL", "Offer Size", "Over Subscription Ratio"].includes(dataItem.Flag)) {
+                        $(this).css({
+                            "font-weight": "bold",
+                            "background-color": "#dff0d8"
+                        });
+                    }
+                });
+            }
+        });
+
+        $("<h6 class='fw-bold mb-1'>" + title + "</h6>")
+            .insertBefore(gridId);
+    }
+
+    function formatNumber(value) {
+        if (value == null || value === "")
+            return "";
+        return Number(value).toLocaleString('en-IN');
+    }
+
+     function runrecon(runRule) {
+         var offer_code =  localStorage.getItem("selectedIPO");
+          try {
+            customAjax({
+                type: "GET",
+                url: '@Url.Action("getRejReason", "Rejection")',
+                data: {
+                offer_code: offer_code,
+                runRule : runRule
+                },
+                success: function (response) {
+                    if (response && response.success) {
+                      var data = JSON.parse(response.data);
+                          rejectionGridData = data;
+                            fetchrejgrid(data);
+                            checkAndLoadSummary();
+                    }
+                    else {
+                        $.alert({
+                            title: 'IPO Allotment',
+                            content: 'Save failed!',
+                            type: 'red',
+                        });
+                    }
+                },
+                error: function (er) {
+                    console.log(er);
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+
+     function fetchrejgrid(data){
+         $("#rejectionList").show();
+        var columns =  [           
+             {
+             field: "rule_code",
+             title: "Rule Code",
+             locked: true,
+             hidden: true,
+         },
+            {
+                field: "rule_name",
+                title: "Reject Reason",
+                width: 275,               
+                footerTemplate: "<div style='font-weight:bold'>TOTAL</div>"
+            },
+               {
+                    field: "original_appl_count",
+                    title: "No.of Appl",
+                    width: 275,
+                    attributes: { style: "text-align:right;" },
+                    footerTemplate: "<div style='text-align:right;font-weight:bold'>#= kendo.toString(sum, 'n0') #</div>"
+                },
+                {
+                    field: "original_qty_count",
+                    title: "No.of Shares",
+                    width: 345,
+                    attributes: { style: "text-align:right;" },
+                    footerTemplate: "<div style='text-align:right;font-weight:bold'>#= kendo.toString(sum, 'n0') #</div>"
+                },
+                {
+                    field: "original_total_amount",
+                    title: "Amount",
+                    width: 385,
+                    attributes: { style: "text-align:right;" },
+                    footerTemplate: "<div style='text-align:right;font-weight:bold'>#= kendo.toString(sum, 'n0') #</div>"
+                },
+            ];
+                 if ($("#rejectionList").data("kendoGrid")) {
+                    $("#rejectionList").data("kendoGrid").destroy();
+                    $("#rejectionList").empty();
+                 }
+                     $("#rejectionList").kendoGrid({
+                     dataSource: {
+                         data: data,
+                         pageSize: 20,
+                         aggregate: [
+                            { field: "original_appl_count", aggregate: "sum" },
+                            { field: "original_qty_count", aggregate: "sum" },
+                            { field: "original_total_amount", aggregate: "sum" },
+
+                            { field: "additions_appl_count", aggregate: "sum" },
+                            { field: "additions_qty_count", aggregate: "sum" },
+                            { field: "additions_total_amount", aggregate: "sum" },
+
+                            { field: "rejections_appl_count", aggregate: "sum" },
+                            { field: "rejections_qty_count", aggregate: "sum" },
+                            { field: "rejections_total_amount", aggregate: "sum" },
+
+                            { field: "total_app_count", aggregate: "sum" },
+                            { field: "total_qty_amount", aggregate: "sum" },
+                            { field: "total_amount", aggregate: "sum" }
+                        ]
+                     },
+                     height: 1810,
+                     pageable: {
+                         pageSizes: [10, 20, 30],
+                         refresh: true
+                     },
+                     sortable: true,
+                     filterable: true,
+                     resizable: true,
+                     columns: columns,                                      
+                 });
+    }
+
+
+    function checkAndLoadSummary() {
+
+        if (mainGridData.length > 0) {
+            loadSummaryGrid(mainGridData, rejectionGridData);
+        }
+    }
+
+       
+    function loadSummaryGrid(mainGridData, rejectionGridData) {
+
+        // Main Grid TOTAL Row
+        var totalRow = mainGridData.find(function (item) {
+            return item.Flag === "TOTAL";
+        });
+
+        var mainAppl = Number(totalRow?.Total_APPL_NO || 0);
+        var mainQty  = Number(totalRow?.total_quantity || 0);
+        var mainAmt  = Number(totalRow?.total_amount || 0);
+
+
+        // Rejection Grid Totals
+        var rejAppl = 0;
+        var rejQty = 0;
+        var rejAmt = 0;
+
+        rejectionGridData.forEach(function (item) {
+
+            rejAppl += Number(item.original_appl_count || 0);
+            rejQty += Number(item.original_qty_count || 0);
+            rejAmt += Number(item.original_total_amount || 0);
+
+        });
+
+
+        // Summary Data
+        var summaryData = [
+            {
+                type: "Valid Applications Available For Allotment",
+                appl: mainAppl - rejAppl,
+                qty: mainQty - rejQty,
+                amt: mainAmt - rejAmt
+            }
+        ];
+
+
+        // Add Offer Size + Over Subscription Ratio
+        if (summaryExtraRows.length > 0) {
+
+            summaryExtraRows.forEach(function (item) {
+
+                summaryData.push({
+                    type: item.type === "Over Subscription Ratio" ? "Balance" : item.type,
+                    appl: item.appl,
+                    qty: item.qty,
+                    amt: item.amt
+                });
+
+            });
+        }
+
+
+        console.log("FINAL SUMMARY DATA:", summaryData);
+
+
+        // Destroy Existing Grid
+        if ($("#summaryGrid").data("kendoGrid")) {
+
+            $("#summaryGrid").data("kendoGrid").destroy();
+            $("#summaryGrid").empty();
+
+        }
+
+
+        // Create Summary Grid
+        $("#summaryGrid").kendoGrid({
+
+            dataSource: {
+                data: summaryData
+            },
+
+            height: 180,
+            scrollable: false,
+            sortable: true,
+            resizable: true,
+
+            columns: [
+                {
+                    field: "type",
+                    title: "Description",
+                    width: 220
+                },
+                {
+                    field: "appl",
+                    title: "No.Of Appl",
+                    width: 230,
+                    attributes: {
+                        style: "text-align:right;"
+                    },
+                    template: "#= formatNumber(appl) #"
+                },
+                {
+                    field: "qty",
+                    title: "No.Of Shares",
+                    width: 285,
+                    attributes: {
+                        style: "text-align:right;"
+                    },
+                    template: "#= formatNumber(qty) #"
+                },
+                {
+                    field: "amt",
+                    title: "Amount",
+                    width: 315,
+                    attributes: {
+                        style: "text-align:right;"
+                    },
+                    template: "#= formatNumber(amt) #"
+                }
+            ],
+
+            dataBound: function (e) {
+
+                var grid = e.sender;
+
+                grid.tbody.find("tr").each(function () {
+
+                    var item = grid.dataItem(this);
+
+                    if (
+                        item.type === "Valid Applications Available For Allotment" ||
+                        item.type === "Offer Size" ||
+                        item.type === "Balance"
+                    ) {
+
+                        $(this).css({
+                            "font-weight": "bold",
+                            "background-color": "#dff0d8"
+                        });
+
+                    }
+                });
+            }
+        });
+    }
+    
+
+</script>
