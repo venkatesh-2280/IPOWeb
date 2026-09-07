@@ -222,8 +222,12 @@
                                     <input type="text" id="isin" name="isin" class="form-control" />
                                     <span id="v_isin" class="validation"></span>
                                 </div>
+                                <div class="col-sm-2">
+                                    <label class="form-label">Temp. ISIN No.</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
+                                    <input type="text" id="tempisin" name="tempisin" class="form-control"  readonly />                                 
+                                </div>
 
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <label class="form-label">Remarks</label>
                                     <input type="text" id="remarks" name="remarks" class="form-control" />
                                     <span id="v_remarks" class="validation"></span>
@@ -316,24 +320,27 @@
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade show active" id="navs-top-ids" role="tabpanel">
-                                                <div id="ipo">
+                                            <div class="tab-pane fade show active" id="navs-top-ids" role="tabpanel">                                                
                                                     <div class="row">
                                                         <div class="col-sm-2">
                                                             <label class="form-label">Pre Offer Capital</label>
-                                                            <input type="number" id="preissue" onkeydown="setPostPrice()" class="form-control" />
+                                                            <input type="number" id="preissue"  class="form-control" />
                                                             <input type="number" id="offer_detail_gid" class="form-control" hidden />
                                                             <input type="text" id="status" class="form-control" hidden />
                                                         </div>
+                                                    <div class="col-sm-2" id="ratios" style="display:none;">
+                                                        <label class="form-label">Ratio</label>
+                                                        <input type="text" id="ratio"   class="form-control" />
+                                                    </div>
                                                         <div class="col-sm-2">
                                                             <label class="form-label">Offer Size</label>
-                                                            <input type="number" id="issuesize" onkeydown="setPostPrice()" class="form-control" />
-                                                        </div>
+                                                            <input type="number" id="issuesize"  class="form-control" />
+                                                        </div>                                                    
                                                         <div class="col-sm-2">
                                                             <label class="form-label">Post Offer Capital</label>
                                                             <input type="number" id="postissue" class="form-control" readonly />
                                                         </div>
-                                                        <div class="col-sm-2">
+                                                        <div class="col-sm-2" id="lotsizes">
                                                             <label class="form-label">Lot Size</label>
                                                             <input type="number" id="lotsize" class="form-control" />
                                                         </div>
@@ -347,26 +354,30 @@
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-top:20px;">
-                                                        <div class="col-sm-2">
+                                                        <div class="col-sm-2" id="pricetypes">
                                                             <label class="form-label"> Price Type</label>
                                                             <select name="pricetype" id="pricetype" class="form-select"></select>
                                                         </div>
-                                                        <div class="col-sm-2">
+                                                        <div class="col-sm-2" id="fixedprice">
                                                             <label class="form-label">Fixed Price</label>
                                                             <input type="number" id="fprice" class="form-control" disabled />
                                                         </div>
-                                                        <div class="col-sm-2">
+                                                        <div class="col-sm-2" id="minprices">
                                                             <label class="form-label">Minimum Price</label>
                                                             <input type="number" id="minprice" class="form-control" disabled />
                                                         </div>
-                                                        <div class="col-sm-2">
+                                                        <div class="col-sm-2" id="maxprices">
                                                             <label class="form-label">Maximum Price</label>
                                                             <input type="number" id="maxprice" class="form-control" disabled />
                                                         </div>
-                                                        <div class="col-sm-2">
+                                                        <div class="col-sm-2" id="cutoffprices">
                                                             <label class="form-label">Cut Off Price</label>
                                                             <input type="number" id="cutoffprice" class="form-control" disabled />
                                                         </div>
+                                                    <div class="col-sm-2" id="recordprice" style="display:none;">
+                                                        <label class="form-label">Record / Cut Off Date</label>
+                                                        <input type="date" id="recorddate" class="form-control" />
+                                                    </div>
                                                         <div class="col-sm-2">
                                                             <center>
                                                                 <button type="button" class="btn btn-primary" id="btnIssueSave"
@@ -375,53 +386,8 @@
                                                                 </button>
                                                             </center>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div id="RO" style="display:none">
-                                                    <div class="row">
-                                                        <div class="col-sm-2">
-                                                            <label class="form-label">Pre Offer Capital</label>
-                                                            <input type="number" id="preissue" onkeydown="setPostPrice()" class="form-control" />
-                                                            <input type="number" id="offer_detail_gid" class="form-control" hidden />
-                                                            <input type="text" id="status" class="form-control" hidden />
-                                                        </div>
-                                                        <div class="col-sm-2">
-                                                            <label class="form-label">Ratio</label>
-                                                            <input type="text" id="ratio" class="form-control" />
-                                                        </div>
-                                                        <div class="col-sm-2">
-                                                            <label class="form-label">Offer Size</label>
-                                                            <input type="number" id="issuesize" onkeydown="setPostPrice()" class="form-control" />
-                                                        </div>
-                                                        <div class="col-sm-2">
-                                                            <label class="form-label">Post Offer Capital</label>
-                                                            <input type="number" id="postissue" class="form-control" readonly />
-                                                        </div>                                                       
-                                                        <div class="col-sm-2">
-                                                            <label class="form-label">Face Value</label>
-                                                            <input type="number" id="facevalue" class="form-control" />
-                                                        </div>
-                                                        <div class="col-sm-2">
-                                                            <label class="form-label">Premium</label>
-                                                            <input type="number" id="premium" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row" style="margin-top:10px;">
-                                                       
-                                                        <div class="col-sm-2">
-                                                            <label class="form-label">Record / Cut Off Date</label>
-                                                            <input type="date" id="recorddate" class="form-control" />
-                                                        </div>
-                                                        <div class="col-sm-2">
-                                                            <center>
-                                                                <button type="button" class="btn btn-primary" id="btnIssueSave"
-                                                                        onclick="saveofferDetails()" style="padding: 3px 25px;margin-top:28px;width:60%">
-                                                                    Save
-                                                                </button>
-                                                            </center>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    </div>                                       
+                                               
                                             </div>
                                             <div class="tab-pane fade" id="navs-top-bank" role="tabpanel" style="overflow-y: scroll;height: 235px;overflow-x: hidden;">
                                                 <div class="row">
@@ -646,11 +612,14 @@
     window.viewPerm = '@viewPerm';
     window.delPerm = '@delPerm';
 </script>
-<script>
+<script>   
           $(document).ready(function () {
                $('#navhead').text('Offer Setup');
                  var ipocode = localStorage.getItem("selectedIPO");
                  $("#ipocode").val(ipocode);
+                 $("#preissue, #ratio").on("input", function () {
+                        setPostPrice();
+                    });
                  var mode = new URLSearchParams(window.location.search).get('mode');
                  var defaultStatus = sessionStorage.getItem("default_status")
                $.when(
@@ -715,19 +684,44 @@
           });
       });
 
-    $("#offer_type").on("change", function () {
-          var offerType = $(this).val();
-          if (offerType === "Rights Offer") {
-              $("#empdiscount").val("");          // optional: clear existing value
-              $("#empdiscount").prop("readonly", true);
-                $("#ipo").hide();
-                $("#RO").show();
-          } else {
-              $("#empdiscount").prop("readonly", false);
-                  $("#ipo").show();
-                  $("#RO").hide();
-          }
-      });
+        $("#offer_type").on("change", function () {
+        var offerType = $(this).val();
+        if (offerType === "Rights Offer") {
+            $("#empdiscount").val("");
+            $("#empdiscount").prop("readonly", true);
+            $("#cutoffprices").hide();
+            $("#maxprices").hide();
+            $("#minprices").hide();
+            $("#fixedprice").hide();
+            $("#pricetypes").hide();
+            $("#lotsizes").hide();
+            $("#recordprice").show();
+            $("#ratios").show();
+            // Rights Offer -> Offer Size is auto calculated
+            $("#issuesize").prop("readonly", true);
+            $("#preissue").val("");
+        } else {
+            $("#empdiscount").prop("readonly", false);
+            $("#cutoffprices").show();
+            $("#maxprices").show();
+            $("#minprices").show();
+            $("#fixedprice").show();
+            $("#pricetypes").show();
+            $("#lotsizes").show();
+            $("#recordprice").hide();
+            $("#ratios").hide();
+            // Other Offer Type -> User enters Offer Size
+            $("#issuesize").prop("readonly", false);
+            // Clear ratio
+            $("#ratio").val("");
+            $("#preissue").val("");
+            $("#issuesize").val("");
+            $("#postissue").val("");
+        }
+
+        // Recalculate after Offer Type changes
+        setPostPrice();
+    });
 
           // Global variables
           offerHeader = "";
@@ -1116,6 +1110,7 @@
                   success: function (response) {
                           if (response && response.success == true ) {
                           var data = JSON.parse(response.data);
+                          console.log("FETCHDATA:", data);
                           offerHeader = data.Table;
                           offerDetails = data.Table1;
                           offerBank = data.Table2;
@@ -1183,6 +1178,29 @@
                       $("#headerBtnsubmit").prop('disabled', true);
                   }
                 }
+
+                if(data.offer_type == "Rights Offer") {
+                    $("#cutoffprices").hide();
+                    $("#maxprices").hide();
+                    $("#minprices").hide();
+                    $("#fixedprice").hide();
+                    $("#pricetypes").hide();
+                    $("#lotsizes").hide();
+                    $("#recordprice").show();
+                    $("#ratios").show();
+                    $("#empdiscount").prop('disabled', true);
+                     } else {
+                        $("#cutoffprices").show();
+                        $("#maxprices").show();
+                        $("#minprices").show();
+                        $("#fixedprice").show();
+                        $("#pricetypes").show();
+                        $("#lotsizes").show();
+                        $("#recordprice").hide();
+                        $("#ratios").hide();
+                    $("#empdiscount").prop('disabled', false);
+                }
+
                   $("#offer_code").val(data.offer_code);
                   $("#offer_type").val(data.offer_type);
                   $("#listing").val(data.offer_listing_no);
@@ -1217,12 +1235,28 @@
                   $("#minprice").val(data.offer_maximumprice);
                   $("#maxprice").val(data.offer_minimumprice);
                   $("#cutoffprice").val(data.offer_cutoffprice);
+                  var date = new Date(data.record_cutoff_date);
+                    var year = date.getFullYear();
+                    var month = String(date.getMonth() + 1).padStart(2, '0');
+                    var day = String(date.getDate()).padStart(2, '0');
+                    $("#recorddate").val(year + "-" + month + "-" + day);
+                  $("#ratio").val(data.rights_ratio_numerator + ":" + data.rights_ratio_denominator);
+
               }
 
           function saveofferDetails(){
                  var status = $("#status").val();
-                     var clientname = $("#clientname").val();
+                   var clientname = $("#clientname").val();
                   var priceType = $("#pricetype").val();
+                      var ratio = ($("#ratio").val() || "").trim();
+                      var ratioNumerator = 0;
+                    var ratioDenominator = 0;
+                    if (ratio.includes(":")) {
+                        var ratioParts = ratio.split(":");
+                        ratioNumerator = parseInt(ratioParts[0].trim()) || 0;
+                        ratioDenominator = parseInt(ratioParts[1].trim()) || 0;
+                    }
+
                if (priceType === "P") {
                   if (!validatePrices()) {
                       return;
@@ -1253,8 +1287,16 @@
                               payload.offer_cutoffprice= $("#cutoffprice").val() ? parseFloat($("#cutoffprice").val()) : 0;
                               payload.offer_code= $("#offer_code").val();
                               payload.client_code= $("#clientcode").val();
+                              payload.ratio_numerator = ratioNumerator;
+                             payload.ratio_denominator = ratioDenominator;
+                              payload.record_cutoff_date = $("#recorddate").val() || null;
                               payload.user_code= '@userCode';
                               payload.action=$("#offer_detail_gid").val() == 0 ? "INSERT": "UPDATE";
+                              console.log("Ratio:", ratio);
+                            console.log("Numerator:", payload.ratio_numerator);
+                            console.log("Denominator:", payload.ratio_denominator);
+                                console.log("Payload object:", payload);
+                             console.log("Payload JSON:", JSON.stringify(payload));
                           try {
                           $.ajax({
                               type: "POST",
@@ -1300,16 +1342,69 @@
 
           }
 
-             function setPostPrice(){
-              var preCaptital = parseFloat($("#preissue").val().replace(/,/g, '')) || 0;
-              var offer_issuesize = parseFloat($("#issuesize").val().replace(/,/g, '')) || 0;
-              var postprice = preCaptital + offer_issuesize;
-              $("#postissue").val(postprice.toFixed(2));
-          }
+        function setPostPrice() {
 
-              $("#preissue, #issuesize").on("input", function () {
-              setPostPrice();
-          });
+        var preCapital = parseFloat($("#preissue").val()) || 0;
+
+        // IMPORTANT: use offer_type, not offertype
+        var offerType = $("#offer_type").val();
+
+        // =========================
+        // RIGHTS OFFER
+        // =========================
+        if (offerType === "Rights Offer") {
+
+            var ratio = $("#ratio").val().trim();
+
+            var numerator = 0;
+            var denominator = 0;
+
+            if (ratio.includes(":")) {
+
+                var ratioParts = ratio.split(":");
+
+                numerator = parseFloat(ratioParts[0].trim()) || 0;
+                denominator = parseFloat(ratioParts[1].trim()) || 0;
+            }
+
+            if (preCapital > 0 && numerator > 0 && denominator > 0) {
+
+                // Offer Size = Pre Offer Capital × Ratio
+                var offerSize = preCapital * (numerator / denominator);
+
+                // Post Offer Capital = Pre Offer Capital + Offer Size
+                var postCapital = preCapital + offerSize;
+
+                $("#issuesize").val(offerSize.toFixed(2));
+                $("#postissue").val(postCapital.toFixed(2));
+
+            } else {
+
+                $("#issuesize").val("");
+                $("#postissue").val("");
+            }
+        }
+
+        // =========================
+        // OTHER OFFER TYPES / SME
+        // =========================
+        else {
+
+            // User manually enters Offer Size
+            var offerSize = parseFloat($("#issuesize").val()) || 0;
+
+            // Post Offer Capital = Pre Offer Capital + Offer Size
+            var postCapital = preCapital + offerSize;
+
+            $("#postissue").val(postCapital.toFixed(2));
+        }
+    }
+
+
+    // Recalculate when values are entered/changed
+    $("#preissue, #ratio, #issuesize").on("input", function () {
+        setPostPrice();
+    });
 
           function validatePrices() {
               var min = parseFloat($("#minprice").val()) || 0;
