@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Net;
 using System.Net.Http.Headers;
@@ -340,6 +341,81 @@ namespace IPOWeb.Controllers
                 });
             }
         }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetTotal(string ipocodes)
+        {
+            string urlstring =
+                Convert.ToString(_configuration.GetSection("Appsettings")["apiurl"])
+                + "gettotal?ipocodes=" + ipocodes;
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan;
+
+                    APIcookieName = "APItoken-" +
+                                    User.FindFirst(ClaimTypes.Name)?.Value + "_" +
+                                    User.FindFirst(ClaimTypes.Role)?.Value;
+
+                    string token = Request.Cookies[APIcookieName];
+
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+
+                    var response = await client.GetAsync(urlstring);
+
+                    ApiTokenRefreshMiddleware.TokenUpdate(
+                        HttpContext,
+                        response,
+                        APIcookieName
+                    );
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        Response.Cookies.Delete(APIcookieName);
+
+                        return Json(new
+                        {
+                            success = false,
+                            authExpired = true
+                        });
+                    }
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string resultMessage = await response.Content.ReadAsStringAsync();
+
+                        Console.WriteLine("GetTotal API Response: " + resultMessage);
+
+                        return Json(new
+                        {
+                            success = true,
+                            data = resultMessage
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "API call failed: " + response.StatusCode
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
         public static List<DatasetJob> ConvertToDatasetJobList(DataTable dt)
         {
             var list = new List<DatasetJob>();
