@@ -5,6 +5,7 @@ using IPOWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Data;
 using System.Data.SqlTypes;
@@ -387,8 +388,8 @@ namespace IPOWeb.Controllers
 
         [HttpPost]
         public async Task<JsonResult> Getrulecodesdf_()
-        { 
-            urlstring = Convert.ToString(_configuration.GetSection("Appsettings")["apiurl"]) 
+        {
+            urlstring = Convert.ToString(_configuration.GetSection("Appsettings")["apiurl"])
                 + "Getrulecode";
 
             try
@@ -398,7 +399,7 @@ namespace IPOWeb.Controllers
                     client.Timeout = Timeout.InfiniteTimeSpan;
                     APIcookieName = "APItoken-" + User.FindFirst(ClaimTypes.Name)?.Value + "_" + User.FindFirst(ClaimTypes.Role)?.Value;
                     string token = Request.Cookies[APIcookieName];
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token); 
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     var response = await client.PostAsync(urlstring, null);
                     var responseString = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject<List<RunRulecodeModel>>(responseString);
@@ -469,8 +470,207 @@ namespace IPOWeb.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-    }
 
+
+        [HttpPost]
+        public JsonResult InsRightsEntitlement(string offer_code)
+        {
+            urlstring = Convert.ToString(
+                _configuration.GetSection("Appsettings")["apiurl"]
+            ) + "InsRightsEntitlement";
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan;
+
+                    APIcookieName = "APItoken-" +
+                        User.FindFirst(ClaimTypes.Name)?.Value.ToString() +
+                        "_" +
+                        User.FindFirst(ClaimTypes.Role)?.Value.ToString();
+
+                    string token = Request.Cookies[APIcookieName];
+
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json")
+                    );
+
+                    string url = urlstring +
+                                 "?offer_code=" +
+                                 Uri.EscapeDataString(offer_code);
+
+                    var response = client.PostAsync(url,null).Result;
+
+                    ApiTokenRefreshMiddleware.TokenUpdate(
+                        HttpContext,
+                        response,
+                        APIcookieName
+                    );
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        Response.Cookies.Delete(APIcookieName);
+
+                        return Json(new
+                        {
+                            success = false,
+                            authExpired = true
+                        });
+                    }
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string resultMessage =
+                            response.Content.ReadAsStringAsync().Result;
+
+                        var result =
+                            JsonConvert.DeserializeObject<dynamic>(resultMessage);
+
+                        return Json(new
+                        {
+                            success = true,
+                            result = result.result.ToString()
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "API call failed: " +
+                                      response.StatusCode
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetRightsEntitlement(string offer_code)
+        {
+            urlstring = Convert.ToString(
+                _configuration.GetSection("Appsettings")["apiurl"]
+            ) + "GetRightsEntitlement";
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan;
+
+                    APIcookieName = "APItoken-" +
+                        User.FindFirst(ClaimTypes.Name)?.Value?.ToString() +
+                        "_" +
+                        User.FindFirst(ClaimTypes.Role)?.Value?.ToString();
+
+                    string token = Request.Cookies[APIcookieName];
+
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json")
+                    );
+
+                    string url = urlstring +
+                                 "?offer_code=" +
+                                 Uri.EscapeDataString(offer_code);
+
+                    // API call - ASYNC
+                    var response = await client.GetAsync(url);
+
+                    ApiTokenRefreshMiddleware.TokenUpdate(
+                        HttpContext,
+                        response,
+                        APIcookieName
+                    );
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        Response.Cookies.Delete(APIcookieName);
+
+                        return Json(new
+                        {
+                            success = false,
+                            authExpired = true
+                        });
+                    }
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "API call failed: " +
+                                      response.StatusCode
+                        });
+                    }
+
+                    // Read API response - ASYNC
+                    string resultMessage =
+                        await response.Content.ReadAsStringAsync();
+
+                    // Deserialize API response
+                    JObject apiResult =
+                        JsonConvert.DeserializeObject<JObject>(
+                            resultMessage
+                        );
+
+                    if (apiResult == null)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Invalid response received from API."
+                        });
+                    }
+
+                    // Convert summary
+                    var summary =
+                        apiResult["summary"]?
+                            .ToObject<List<List<object>>>()
+                        ?? new List<List<object>>();
+
+                    // Convert details
+                    var details =
+                        apiResult["details"]?
+                            .ToObject<List<List<object>>>()
+                        ?? new List<List<object>>();
+
+                    return Json(new
+                    {
+                        success = true,
+                        data = new
+                        {
+                            summary = summary,
+                            details = details
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+    }
 }
 
 
