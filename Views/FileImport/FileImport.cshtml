@@ -3,7 +3,7 @@
     var userName = Context.Session.GetString("user_name");
     var userRole = Context.Session.GetString("user_role");
     var userCode = Context.Session.GetString("user_code");
-    var roleName = Context.Session.GetString("role_name");
+    var roleName = Context.Session.GetString("role_name");   
 }
 <!DOCTYPE html>
 <html>
@@ -241,6 +241,10 @@
                                     <td id="physicalTotal">0</td>
                                 </tr>
                                 <tr>
+                                    <td>Share Capital</td>
+                                    <td id="sharecapital">0</td>
+                                </tr>
+                                <tr>
                                     <td>Over All Total</td>
                                     <td id="overallTotal">0</td>
                                 </tr>
@@ -255,105 +259,7 @@
                              style="font-weight:bold; margin-top:10px;">
                         </div>
                     </div>
-                </div>
-
-                @*  <div class="row" style="margin-top:20px;">
-                    <div class="col-sm-12">
-                        <div class="nav-align-top mb-4">
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <button type="button"
-                                            class="nav-link active"
-                                            role="tab"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#navs-top-list"
-                                            aria-controls="navs-top-list"
-                                            aria-selected="true">
-                                        Dataset List
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button type="button"
-                                            class="nav-link active"
-                                            role="tab"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#navs-top-progress"
-                                            aria-controls="navs-top-progress"
-                                            aria-selected="false">
-                                        Dataset Progress
-                                    </button>
-                                </li>
-                            </ul>
-                            <div class="tab-content">
-                                 <div class="tab-pane fade show active" id="navs-top-list" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div id="datasetList"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <button type="button" class="btn btn-primary" id="btnNext" onclick="nextprocess()" style="float:right;padding: 3px 25px;margin-top:28px;width:25%">Next</button>
-                                        </div>
-                                    </div>
-                                </div> 
-                                <div class="tab-pane fade  show active" id="navs-top-progress" role="tabpanel">
-                                     <div class="row">
-                                        <div class="col-sm-3">
-                                            <label class="form-label" for="ds" data-field="ds">Selected Dataset : <span id="datasetname"></span></label>
-                                        </div>
-                                    </div> 
-
-                                    <div class="row">
-                                        <div class="col-sm-5">
-                                            <label class="form-label" for="pipeline" data-field="pipeline">Pipeline</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>                                           
-                                            <select id="pipeline" onchange="getPipeline_code()" class="form-select"></select>
-                                        </div>
-                                         <div class="col-sm-1">
-                                            <img style="margin-top: 35px; margin-left: 23px;height: 25px; width: 25px; cursor:pointer;" onclick="downloadTemplate()" src="~/Assets/images/download.png" />
-                                        </div>
-                                        <div class="col-sm-5">
-                                            <label class="form-label" for="dataset" data-field="dataset">Dataset</label>
-                                            <select id="dataset" class="form-select"></select>
-                                        </div>
-                                        <div class="col-sm-1">
-                                            <img src="/Assets/images/topnotes.png"
-                                                 style="cursor:pointer;width:18px;margin-top:35px;"
-                                                 onclick="openSelectedInfoModel()"
-                                                 data-bs-toggle="modal"
-                                                 data-bs-target="#myModal" />
-                                        </div>
-                                    </div>
-
-                                    <div class="row" style="margin-top:15px;">
-                                        <div id="categoryrow" class="col-sm-3">
-                                            <label class="form-label" for="bank" data-field="bank">Select Category</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
-                                            <select id="category" class="form-select">
-                                                <option value="">-- Select Category -- </option>
-                                                <option value="ASBA">ASBA</option>
-                                                <option value="Non ASBA">Non ASBA</option>
-                                            </select>
-                                        </div>
-                                        <div id="bankrow" class="col-sm-3" style="display: none;">
-                                            <label class="form-label" for="bank" data-field="bank">Select Bank</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
-                                            <select id="bank" class="form-select">
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <label class="form-label" for="pipeline" data-field="pipeline">Choose Excel</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
-                                            <input class="form-control" type="file" id="MultipleFile" multiple>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <button type="button" class="btn btn-primary" id="btnStart" onclick="startprocess()" style="padding: 3px 25px;margin-top:28px;width:40%;margin-right:10px;">Start</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> *@
+                </div>             
 
             </div>
         </div>
@@ -399,14 +305,16 @@
         var selectedDataset = "";
         var iponames = "";
                  $(document).ready(function () {
-            $('#navhead').text('File Import');
+            $('#navhead').text('File Import');            
            var ipoName = localStorage.getItem("selectedIPOText");
             var ipocode = localStorage.getItem("selectedIPO");
             var savedIPO = localStorage.getItem("selectedIPO");
+            var offerType = localStorage.getItem("selectedOfferType");
             iponames = localStorage.getItem("selectedIPOText");
             console.log("IPO Name:", ipoName);
             console.log("IPO Code:", ipocode);
             console.log("savedIPO:", savedIPO);
+            console.log("Offer Type:", offerType);
             // Use based on element type
             $("#iponame").val(ipoName);   // or .text()
 
@@ -424,12 +332,11 @@
             $("#datasetList").show();
         });
 
-        if (iponames && iponames.includes(" Rights Issue")) {
-            $("#rilists").show();
-        } else {
-            $("#rilists").hide();
-        }
-
+            if (offerType == "Rights Offer") {
+                $("#rilists").show();
+                } else {
+                    $("#rilists").hide();
+            }
     });
 
 
@@ -562,8 +469,8 @@
                 });
 
                  console.log("IPO Name:", iponames);
-
-                if (iponames && iponames.includes(" Rights Issue")) {
+                var offerType = localStorage.getItem("selectedOfferType");
+               if (offerType == "Rights Offer") {
 
                 // Rights Issue → show ONLY Rights Offer
                 var rightsOffer = activePipelines.filter(function (item) {
@@ -731,41 +638,35 @@
             url: '@Url.Action("GetTotal", "FileImport")',
             data: { ipocodes: ipocodes },
             dataType: "json",
-
                success: function (response) {
+                    var data = JSON.parse(response.data);
+                    console.log("RI Totals:", data);
+                    var totals = data.Table[0];
+                    var nsdlTotal = parseFloat(totals.nsdl_total) || 0;
+                    var cdslTotal = parseFloat(totals.cdsl_total) || 0;
+                    var sharecapital = parseFloat(totals.share_capital) || 0;
+                    var overallTotal = parseFloat(totals.total) || 0;
+                    var preOfferCapitalTotal = parseFloat(totals.offer_postcapital) || 0;
 
-        var data = JSON.parse(response.data);
+                    $("#nsdlTotal").text(nsdlTotal);
+                    $("#cdslTotal").text(cdslTotal);
+                    $("#sharecapital").text(sharecapital);
+                    $("#overallTotal").text(overallTotal);
+                    $("#preOfferCapitalTotal").text(preOfferCapitalTotal);
 
-        console.log("RI Totals:", data);
+                    // Compare totals
+                    if (overallTotal === sharecapital) {
+                        $("#riValidationMessage")
+                            .text("Totals are tallied.. Eligible for Run Entitlement.")
+                            .css("color", "green");
+                    } else {
+                        $("#riValidationMessage")
+                            .text("Totals are not tallied.. Not eligible for Run Entitlement.")
+                            .css("color", "red");
+                    }
 
-        var totals = data.Table[0];
-
-        var nsdlTotal = parseFloat(totals.nsdl_total) || 0;
-        var cdslTotal = parseFloat(totals.cdsl_total) || 0;
-        var overallTotal = parseFloat(totals.total) || 0;
-        var preOfferCapitalTotal = parseFloat(totals.offer_postcapital) || 0;
-
-        $("#nsdlTotal").text(nsdlTotal);
-        $("#cdslTotal").text(cdslTotal);
-        $("#overallTotal").text(overallTotal);
-        $("#preOfferCapitalTotal").text(preOfferCapitalTotal);
-
-        // Compare totals
-        if (overallTotal === preOfferCapitalTotal) {
-
-            $("#riValidationMessage")
-                .text("Totals are tallied.. Eligible for Run Entitlement.")
-                .css("color", "green");
-
-        } else {
-
-            $("#riValidationMessage")
-                .text("Totals are not tallied.. Not eligible for Run Entitlement.")
-                .css("color", "red");
-        }
-
-        $("#rilists").show();
-    },
+                    $("#rilists").show();
+                },
 
             error: function (err) {
                 console.log("GetTotal Error:", err);

@@ -323,14 +323,16 @@
                                             <div class="tab-pane fade show active" id="navs-top-ids" role="tabpanel">                                                
                                                     <div class="row">
                                                         <div class="col-sm-2">
-                                                            <label class="form-label">Pre Offer Capital</label>
+                                                        <label class="form-label">Pre Offer Capital</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
                                                             <input type="number" id="preissue"  class="form-control" />
                                                             <input type="number" id="offer_detail_gid" class="form-control" hidden />
                                                             <input type="text" id="status" class="form-control" hidden />
+                                                        <span id="querypreoffercapital" style="color: red; font-size: 12px;position:relative;"></span>
                                                         </div>
                                                     <div class="col-sm-2" id="ratios" style="display:none;">
-                                                        <label class="form-label">Ratio</label>
+                                                        <label class="form-label">Ratio</label>&nbsp;<span style="font-size: 12px;color:red;font-weight: bold;">*</span>
                                                         <input type="text" id="ratio"   class="form-control" />
+                                                        <span id="queryratio" style="color: red; font-size: 12px;position:relative;"></span>
                                                     </div>
                                                         <div class="col-sm-2">
                                                             <label class="form-label">Offer Size</label>
@@ -1246,6 +1248,8 @@
 
           function saveofferDetails(){
                  var status = $("#status").val();
+                 var preissue = $("#preissue").val();
+                 var vratio = $("#ratio").val();
                    var clientname = $("#clientname").val();
                   var priceType = $("#pricetype").val();
                       var ratio = ($("#ratio").val() || "").trim();
@@ -1263,6 +1267,18 @@
                   }
               }
               var isValid = true;
+                    if(preissue === "") {
+                            $("#querypreoffercapital").text("Please Enter Pre Offer Capital");
+                        isValid = false;
+                        } else {
+                            $("#querypreoffercapital").text("");
+                        }
+                        if(vratio === "") {
+                            $("#queryratio").text("Please Enter Ratio");
+                        isValid = false;
+                        } else {
+                            $("#queryratio").text("");
+                        }
                    if(clientname) {
             if((status === "Y" && activeOfferStatus ==="false") || (status === "" && activeOfferStatus === "false")) {
                                      $.alert({

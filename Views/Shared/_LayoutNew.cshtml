@@ -2525,13 +2525,20 @@
                          var $ddl = $("#" + 'iponames');
                            $ddl.empty();
                            $ddl.append('<option value="">--- Select ---</option>');
-                           $.each(filteredData, function (index, item) {
-                               $ddl.append(
-                                  '<option value="' + item.offer_code + '">' +
-                                     item.offer_code + ' - '+ item.client_name +
-                                   '</option>'
-                               );
-                           });
+                           // $.each(filteredData, function (index, item) {
+                           //     $ddl.append(
+                           //        '<option value="' + item.offer_code + '">' +
+                           //           item.offer_code + ' - '+ item.client_name +
+                           //         '</option>'
+                           //     );
+                           // });
+                                   $.each(filteredData, function (index, item) {
+                                        $ddl.append(
+                                            '<option value="' + item.offer_code + '" data-offer-type="' + item.offer_type + '">' +
+                                                item.offer_code + ' - ' + item.client_name +
+                                            '</option>'
+                                        );
+                                    });
                            var savedIPO = localStorage.getItem("selectedIPO");
                            var offer_codes =localStorage.getItem("selectedIPO");
                            if (!savedIPO){
@@ -2540,9 +2547,14 @@
                            } 
                            console.log("Before set :", $ddl.val()); 
                             $ddl.val(offer_codes);  
+                            var selectedOption = $("#iponames option:selected");
                             localStorage.setItem("selectedIPO", offer_codes);
-                            var ipoTexts = $("#iponames option:selected").text();
-                            localStorage.setItem("selectedIPOText",ipoTexts);
+                            var ipoTexts = selectedOption.text().trim();
+                            var offerType = selectedOption.attr("data-offer-type");
+                            // localStorage.setItem("selectedIPOText",ipoTexts);
+                            localStorage.setItem("selectedIPO", offer_codes);
+                            localStorage.setItem("selectedIPOText", ipoTexts);
+                            localStorage.setItem("selectedOfferType", offerType);
                             console.log(ipoTexts);
                             
                        }
@@ -2570,8 +2582,10 @@
         function setoffers(){
            var ipoId = $("#iponames").val();
            var ipoText = $("#iponames option:selected").text();
+           var offerType = $("#iponames option:selected").attr("data-offer-type");
            localStorage.setItem("selectedIPO", ipoId);
            localStorage.setItem("selectedIPOText", ipoText);
+           localStorage.setItem("selectedOfferType", offerType);
            $("#iponame").val(ipoText);
            $("#ipocode").val(ipoId); 
         }
