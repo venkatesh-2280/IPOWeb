@@ -642,8 +642,18 @@
               $("#stack_gid").val(0);
               $("#milestone_gid").val(0);
               $("#createedit").val($('#offer_header_gid').val() == 0 ? "CREATE" : "EDIT");
-              var offer_code = sessionStorage.getItem("edit_offer_code");
-              var client_code = sessionStorage.getItem("edit_client_code");
+              // var offer_code = sessionStorage.getItem("edit_offer_code");
+              // var client_code = sessionStorage.getItem("edit_client_code");
+
+              if (mode === null){
+                    var offer_code = "";
+                    var client_code = "";
+                }else {
+
+                    var offer_code = sessionStorage.getItem("edit_offer_code");
+                    var client_code = sessionStorage.getItem("edit_client_code");
+                }
+
               $("#clientcode").val(client_code);
               $("#offer_code").val(offer_code);
               if (offer_code && client_code) {

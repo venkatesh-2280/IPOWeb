@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Data;
 using System.Data.SqlTypes;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -554,6 +555,100 @@ namespace IPOWeb.Controllers
                     success = false,
                     message = ex.Message
                 });
+            }
+        }
+
+
+        [HttpGet]
+        public IActionResult Export_ri_allotment_bo(string offer_code)
+        {
+            string urlstring = Convert.ToString(
+                _configuration.GetSection("Appsettings")["apiurl"]) + "Export_ri_allotment_bo";
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan;
+
+                    string APIcookieName =
+                        "APItoken-" +
+                        User.FindFirst(ClaimTypes.Name)?.Value + "_" +
+                        User.FindFirst(ClaimTypes.Role)?.Value;
+
+                    string token = Request.Cookies[APIcookieName];
+
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+
+                    var response = client.GetAsync(urlstring + "?offer_code=" + offer_code).Result;
+                    ApiTokenRefreshMiddleware.TokenUpdate(HttpContext, response, APIcookieName);
+                    if (!response.IsSuccessStatusCode)
+                        return Problem("API call failed");
+
+                    string resultMessage = response.Content.ReadAsStringAsync().Result;
+
+                    var ds = JsonConvert.DeserializeObject<DataSet>(resultMessage);
+
+                    var stream = new MemoryStream();
+
+                    using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, true))
+                    {
+                        // =========================
+                        // 📄 FILE 1 → CDSL
+                        // =========================
+                        var entry1 = archive.CreateEntry("ri_output_CDSL.txt");
+
+                        using (var writer = new StreamWriter(entry1.Open()))
+                        {
+                            writer.WriteLine(
+                                "DP-ID".PadRight(10) +
+                                "CLNT-ID".PadRight(10) +
+                                "ALLOTED QUANTITY".PadRight(150)
+                            );
+
+                            foreach (DataRow row in ds.Tables[0].Rows)
+                            {
+                                writer.WriteLine(
+                                    (row["dp_id"]?.ToString() ?? "").PadRight(10) +
+                                    (row["client_id"]?.ToString() ?? "").PadRight(10) +
+                                    (row["raw_entitlement_qty"]?.ToString() ?? "").PadRight(150)
+                                );
+                            }
+                        }
+
+                        // =========================
+                        // 📄 FILE 2 → NSDL
+                        // =========================
+                        var entry2 = archive.CreateEntry("ri_output_NSDL.txt");
+
+                        using (var writer = new StreamWriter(entry2.Open()))
+                        {
+                            writer.WriteLine(
+                                "DP-ID".PadRight(10) +
+                                "CLNT-ID".PadRight(10) +
+                                "ALLOTED QUANTITY".PadRight(150)
+                            );
+
+                            foreach (DataRow row in ds.Tables[1].Rows)
+                            {
+                                writer.WriteLine(
+                                    (row["dp_id"]?.ToString() ?? "").PadRight(10) +
+                                    (row["client_id"]?.ToString() ?? "").PadRight(10) +
+                                    (row["raw_entitlement_qty"]?.ToString() ?? "").PadRight(150)
+                                );
+                            }
+                        }
+                    }
+
+                    stream.Position = 0;
+
+                    return File(stream, "application/zip", "ri_allotment.zip");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
             }
         }
 
