@@ -649,13 +649,20 @@ namespace IPOWeb.Controllers
                             .ToObject<List<List<object>>>()
                         ?? new List<List<object>>();
 
+                    // Convert details
+                    var disable_flag =
+                        apiResult["disable_flag"]?
+                            .ToObject<List<List<object>>>()
+                        ?? new List<List<object>>();
+
                     return Json(new
                     {
                         success = true,
                         data = new
                         {
                             summary = summary,
-                            details = details
+                            details = details,
+                            disable_flag = disable_flag
                         }
                     });
                 }
