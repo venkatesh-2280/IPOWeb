@@ -197,7 +197,7 @@
                             &nbsp;&nbsp;
                             <button type="button" onclick="exportdetailSummary()" class="btn btn-primary" id="btnGensummary" style="padding: 3px 25px;margin-top:28px; white-space: nowrap;">Export Detail Summary </button>
                             &nbsp;&nbsp;
-                            <button type="button" onclick="exportallotment()" class="btn btn-primary" id="btnGensummary" style="padding: 3px 25px;margin-top:28px; white-space: nowrap;">Export Allotment </button>
+                            <button type="button" onclick="exportriallotment()" class="btn btn-primary" id="btnGensummary" style="padding: 3px 25px;margin-top:28px; white-space: nowrap;">Export Allotment </button>
                             &nbsp;&nbsp;
                             @* @if (ViewBag.canAdd)
                             {
@@ -686,4 +686,11 @@
             ]
         });
     }
+
+       function exportriallotment() {
+        var offer_code = localStorage.getItem("selectedIPO");
+        window.location.href =
+            '/RunEntitlement/Export_ri_allotment_bo?offer_code=' + encodeURIComponent(offer_code);
+    }
+
 </script>

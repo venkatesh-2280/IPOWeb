@@ -315,6 +315,13 @@
             console.log("IPO Code:", ipocode);
             console.log("savedIPO:", savedIPO);
             console.log("Offer Type:", offerType);
+             if (offerType === "Rights Offer") {
+                $("#rilists").show();
+                // Get already existing totals
+                getTotal();
+            } else {
+                $("#rilists").hide();
+            }
             // Use based on element type
             $("#iponame").val(ipoName);   // or .text()
 
