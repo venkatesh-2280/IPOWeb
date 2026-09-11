@@ -24,7 +24,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Run Rejection</title>
+    <title>Run Entitlement</title>
     <style>
         .content-wrapper {
             display: flex;
@@ -154,7 +154,7 @@
         #rejectionList {
             width: 30% !important;
             overflow: hidden;
-            height: 161px !important;
+            height: 132px !important;
         }
         k-grid-content-locked {
             width: 305px !important;
@@ -167,7 +167,7 @@
         }
 
         .k-grid-footer {
-            margin-top: -124px !important;
+            margin-top: -125px !important;
         }
 
         #rejectionList .k-grid-header-wrap {
@@ -215,7 +215,7 @@
                         <div id="rejectionList"></div>
                     </div>
                 </div>
-                <div class="row" id="entitlementGridSection" style="margin-top:20px; display:none">
+                <div class="row" id="entitlementGridSection" style="margin-top:20px; ">
                     <div class="col-sm-12">
                         <div id="entitlementGrid"></div>
                     </div>
@@ -223,294 +223,28 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="additionsModal" tabindex="-1" aria-hidden="true" style="display:none">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-
-                <div class="modal-header position-relative">
-                    <h4 class="modal-title w-100 text-center mb-0" style="font-size: 15px;">
-                        Plus
-                    </h4>
-                    <span class="position-absolute end-0 me-3"
-                          style="cursor:pointer;font-size:25px;"
-                          data-bs-dismiss="modal">
-                        ×
-                    </span>
-                </div>
-
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="form-label">IPO Code</label>
-                            <input type="text" id="ipo" class="form-control" readonly>
-                        </div>
-
-                        @* </div>
-                    <div class="row" style="margin-top:10px;"> *@
-                        <div class="col-sm-3">
-                            <label class="form-label">Appln. No</label>&nbsp;<span style="color:red;font-weight: bold;">*</span>
-                            <div class="search-box">
-                                <input type="text" id="appno" class="form-control">
-                                <i class="fa fa-search" onclick="SearchRejectionData('APP','R')"></i>
-                            </div>
-                            <span id="queryappno" style="color: red; font-size: 12px;position:relative;"></span>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">Order No</label>&nbsp;<span style="color:red;font-weight: bold;">*</span>
-                            <div class="search-box">
-                                <input type="text" id="orderno" class="form-control">
-                                <i class="fa fa-search" onclick="SearchRejectionData('ORDER','R')"></i>
-                            </div>
-                            <span id="queryorderno" style="color: red; font-size: 12px;position:relative;"></span>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">PAN No</label>&nbsp;<span style="color:red;font-weight: bold;">*</span>
-                            <div class="search-box">
-                                <input type="text" id="panno" class="form-control">
-                                <i class="fa fa-search" onclick="SearchRejectionData('PAN','R')"></i>
-                            </div>
-                            <span id="querypanno" style="color: red; font-size: 12px;position:relative;"></span>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col-sm-3">
-                            <label class="form-label">Quantity</label>
-                            <input type="text" id="shares" class="form-control" readonly>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">Shares Applied</label>
-                            <input type="text" id="shared_applied_price" class="form-control" readonly>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">Amount</label>
-                            <input type="text" id="amt" class="form-control" readonly>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">Remarks</label>&nbsp;
-                            <input type="text" id="reject_remarks" class="form-control" readonly>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col-sm-6">
-                                <label class="form-label">Rule code</label>&nbsp;
-                                <input type="text" id="rule_code" class="form-control" readonly>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label">Addition Remarks</label>&nbsp;<span style="color:red;font-weight: bold;">*</span>
-                                <input type="text" id="remarks" class="form-control">
-                                <span id="queryremarks" style="color: red; font-size: 12px;position:relative;"></span>
-
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="hidden" id="addrule_disable" /><br />
-                            &nbsp;
-                            <label id="addlblstatus" style="color: indianred; display: none; font-size:medium;"></label>
-                        </div>
-                        @* <div class="col-sm-3">
-                        </div> *@
-                        <div class="col-sm-3">
-                        </div>
-                        <div class="col-sm-3">
-                            <center><button type="button" onclick="addSave()" class="btn btn-primary" id="btnAddSave" style="padding: 3px 25px;margin-top:28px;">Save</button></center>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="rejectionsModal" tabindex="-1" aria-hidden="true" style="display:none">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-
-                <div class="modal-header position-relative">
-                    <h4 class="modal-title w-100 text-center mb-0" style="font-size: 15px;">
-                        Minus
-                    </h4>
-                    <span class="position-absolute end-0 me-3"
-                          style="cursor:pointer;font-size:25px;"
-                          data-bs-dismiss="modal">
-                        ×
-                    </span>
-                </div>
-
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="form-label">IPO Code</label>
-                            <input type="text" id="ripo" class="form-control" readonly>
-                        </div>
-                        @*  <div class="col-sm-3">
-                            <label class="form-label">Appln. No</label>
-                            <div class="input-group w-100">
-                            <input type="text" id="rappno" class="form-control">
-                            <button class="btn btn-outline-secondary" type="button"
-                                    onclick="SearchData('APP')">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            </div>
-                        </div> *@
-                        <div class="col-sm-3">
-                            <label class="form-label">Appln. No</label>
-
-                            <div class="search-box">
-                                <input type="text" id="rappno" class="form-control">
-                                <i class="fa fa-search" onclick="SearchRejectionData('APP','A')"></i>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">Order No</label>
-                            <div class="search-box">
-                                <input type="text" id="rorderno" class="form-control">
-                                <i class="fa fa-search" onclick="SearchRejectionData('ORDER','A')"></i>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">PAN No</label>
-                            <div class="search-box">
-                                <input type="text" id="rpanno" class="form-control">
-                                <i class="fa fa-search" onclick="SearchRejectionData('PAN','A')"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col-sm-3">
-                            <label class="form-label">Quantity</label>
-                            <input type="text" id="rshares" class="form-control" readonly>
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">Shares Applied</label>
-                            <input type="text" id="rshared_applied_price" class="form-control" readonly>
-                            <input type="hidden" id="shared_applied_price" />
-                            <input type="hidden" id="rule_code" />
-                        </div>
-                        <div class="col-sm-3">
-                            <label class="form-label">Amount</label>
-                            <input type="text" id="ramt" class="form-control" readonly>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label">Rule code</label>&nbsp;
-                            <select id="rrule_code" class="form-select"></select>
-
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label">Remarks</label>
-                            <input type="text" id="additionremarks" class="form-control">
-                        </div>
-                        <div class="col-sm-3">
-                        </div>
-                        <div class="col-sm-3">
-                        </div>
-                        <div class="col-sm-3">
-                        </div>
-                        <div class="col-sm-3">
-                            <center><button type="button" onclick="rejSave()" class="btn btn-primary" id="btnRejSave" style="padding: 3px 25px;margin-top:28px;">Save</button></center>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
 </body>
 
 </html>
 <script>
     var selectedCodes = [];
     $(document).ready(function () {
-        $('#navhead').text('Run Rejection'); 
+        $('#navhead').text('Run Entitlement'); 
         var ipoName = localStorage.getItem("selectedIPOText");
         $("#iponame").val(ipoName);
         $("#rejectionList").show();
-        $("#entitlementGridSection").hide();
+        // $("#entitlementGridSection").hide();
         var offer_code =  localStorage.getItem("selectedIPO");
         if(offer_code){
-            runrecon(false);
-            }
+            // runrecon(false);
+            getRightsEntitlement(offer_code);
+        }
         var boaChecklist = '@Boachecklist';
         var getnormalizedPath = '@normalizedPath';
         if(boaChecklist == "Y") {
             updateboaVisit(getnormalizedPath);
         }
     });
-
-    // function runrecon(runRule) {
-
-    //     var offer_code = localStorage.getItem("selectedIPO");
-
-    //     // try {
-    //     //     customAjax({
-    //     //         type: "GET",
-    //     //         url: '@Url.Action("getRejReason", "Rejection")',
-    //     //         data: {
-    //     //             offer_code: offer_code,
-    //     //             runRule: runRule
-    //     //         },
-
-    //     //         success: function (response) {
-
-    //     //             if (response && response.success) {
-
-    //     //                 var data = JSON.parse(response.data);
-
-    //     //                 // Load first grid
-    //     //                 fetchrejgrid(data,runRule);
-
-    //     //                 // ONLY when Run Entitlement button is clicked
-    //     //                 if (runRule === true) {
-
-    //     //                     // Show second grid
-    //     //                     $("#entitlementGridSection").show();
-
-    //     //                     // Load hardcoded prototype data
-    //     //                     loadEntitlementGrid();
-    //     //                 }
-    //     //                 else {
-
-    //     //                     // Initial page load / other refresh
-    //     //                     $("#entitlementGridSection").hide();
-    //     //                 }
-    //     //             }
-    //     //             else {
-    //     //                 $.alert({
-    //     //                     title: 'IPO Allotment',
-    //     //                     content: 'Save failed!',
-    //     //                     type: 'red'
-    //     //                 });
-    //     //             }
-    //     //         },
-
-    //     //         error: function (er) {
-    //     //             console.log(er);
-    //     //         }
-    //     //     });
-
-    //     // } catch (e) {
-    //     //     console.log(e);
-    //     // }
-    //     var data = "";
-
-    //             // Load first grid
-    //             fetchrejgrid(data,runRule);
-
-    //             // ONLY when Run Entitlement button is clicked
-    //             if (runRule === true) {
-
-    //                 // Show second grid
-    //                 $("#entitlementGridSection").show();
-
-    //                 // Load hardcoded prototype data
-    //                 loadEntitlementGrid();
-    //             }
-    //             else {
-
-    //                 // Initial page load / other refresh
-    //                 $("#entitlementGridSection").hide();
-    //             }
-
-    // }
 
     function runrecon(runRule) {
 
@@ -571,7 +305,7 @@
         }
     }
 
-        function getRightsEntitlement(offer_code) {
+    function getRightsEntitlement(offer_code) {
 
         $.ajax({
             type: "GET",
@@ -590,8 +324,20 @@
 
                     console.log("Summary:", result.summary);
                     console.log("Details:", result.details);
+                    console.log("disable_flag:", result.disable_flag);
 
 
+                    var disableFlag = result.disable_flag;
+
+                    if (disableFlag && disableFlag.length > 0) {
+                        disableFlag = String(disableFlag[0]).trim().toUpperCase();
+                    }
+
+                    if (disableFlag === "Y") {
+                        $("#btnSave").prop("disabled", true);
+                    } else {
+                        $("#btnSave").prop("disabled", false);
+                    }
                     // =====================================
                     // FIRST GRID
                     // =====================================
@@ -704,52 +450,9 @@
     }
 
     function fetchrejgrid(data, runRule){
-
-        // Initial page load values
-        var zeroData = [
-            {
-                rule_code: "1",
-                rule_name: "CDSL",
-                original_appl_count: 0,
-                original_qty_count: 0,
-                original_total_amount: 0
-            },
-            {
-                rule_code: "2",
-                rule_name: "NSDL",
-                original_appl_count: 0,
-                original_qty_count: 0,
-                original_total_amount: 0
-            },
-            {
-                rule_code: "3",
-                rule_name: "Physical",
-                original_appl_count: 0,
-                original_qty_count: 0,
-                original_total_amount: 0
-            }
-        ];
-
-        // Decide which data to show
-        if (runRule === false) {
-            data = zeroData;
-        } 
         console.log("Grid data:", data);
         $("#rejectionList").show();
         var columns =  [
-            // {
-            //     title: "Select",
-            //     width: 45,
-            //     locked: true,
-            //     headerAttributes: { style: "text-align:center;" },
-            //     attributes: { style: "text-align:center;" },
-            //     headerTemplate:
-            //         "<div style='text-align:center;'>" +
-            //         "<input type='checkbox' id='selectAll' /> " +
-            //         "<label for='selectAll' style='cursor:pointer;'>All</label>" +
-            //         "</div>",
-            //     template: "<input type='checkbox' class='client-checkbox' value='#= rule_name #' />"
-            // },
                 {
                 field: "rule_code",
                 title: "Rule Code",
@@ -758,7 +461,7 @@
             },
             {
                 field: "rule_name",
-                title: "Reject Reason",
+                title: "Depository",
                 width: 260,
                 locked: true,
                 template: function(dataItem) {
@@ -780,14 +483,7 @@
                     style: "text-align:center;font-weight:bold;"
                 }
             },
-            {
-                title: "Rejections",
-                headerAttributes: { style: "text-align:center;font-weight:bold;" },
-                columns: [
-                    { field: "original_qty_count", title: "No.of Shares", width: 130, attributes:{style:"text-align:right;"}, footerTemplate: "#= kendo.toString(sum, 'n0') #",  footerAttributes: { style: "text-align:right;font-weight:bold;" } }
-
-                ]
-            }
+            {field: "original_qty_count", title: "No.of Shares", width: 130, attributes:{style:"text-align:right;"}, footerTemplate: "#= kendo.toString(sum, 'n0') #",  footerAttributes: { style: "text-align:right;font-weight:bold;" } }
         ];
         if ($("#rejectionList").data("kendoGrid")) {
             $("#rejectionList").data("kendoGrid").destroy();
@@ -798,28 +494,24 @@
                 data: data,
                 pageSize: 20,
                 aggregate: [
-                { field: "original_appl_count", aggregate: "sum" },
-                { field: "original_qty_count", aggregate: "sum" },
-                { field: "original_total_amount", aggregate: "sum" },
+                    { field: "original_appl_count", aggregate: "sum" },
+                    { field: "original_qty_count", aggregate: "sum" },
+                    { field: "original_total_amount", aggregate: "sum" },
 
-                { field: "additions_appl_count", aggregate: "sum" },
-                { field: "additions_qty_count", aggregate: "sum" },
-                { field: "additions_total_amount", aggregate: "sum" },
+                    { field: "additions_appl_count", aggregate: "sum" },
+                    { field: "additions_qty_count", aggregate: "sum" },
+                    { field: "additions_total_amount", aggregate: "sum" },
 
-                { field: "rejections_appl_count", aggregate: "sum" },
-                { field: "rejections_qty_count", aggregate: "sum" },
-                { field: "rejections_total_amount", aggregate: "sum" },
+                    { field: "rejections_appl_count", aggregate: "sum" },
+                    { field: "rejections_qty_count", aggregate: "sum" },
+                    { field: "rejections_total_amount", aggregate: "sum" },
 
-                { field: "total_app_count", aggregate: "sum" },
-                { field: "total_qty_amount", aggregate: "sum" },
-                { field: "total_amount", aggregate: "sum" }
-            ]
+                    { field: "total_app_count", aggregate: "sum" },
+                    { field: "total_qty_amount", aggregate: "sum" },
+                    { field: "total_amount", aggregate: "sum" }
+                ]
             },
             height: 410,
-            // pageable: {
-            //     pageSizes: [10, 20, 30],
-            //     refresh: true
-            // },
             sortable: true,
             filterable: true,
             resizable: true,
@@ -903,477 +595,7 @@
         selectedCodes = [];
     }
 
-    // function exportdetailSummary() {
-
-    //     if (selectedCodes.length === 0) {
-    //         $.alert({
-    //             title: 'IPO Web',
-    //             content: "Please select at least one Reason",
-    //             type: 'red',
-    //         });
-    //         return;
-    //     }
-    //     var rule_code = selectedCodes.join(",");
-    //     var offer_code = localStorage.getItem("selectedIPO");
-    //     var url = '/Rejection/getdetailRejectionSummary'
-    //         + '?offer_code=' + encodeURIComponent(offer_code)
-    //         + '&rule_code=' + encodeURIComponent(rule_code);
-
-    //     window.location.href = url;
-    //     selectedCodes = [];
-    // }
-
-    $(document).ready(function () {
-        get_rule_code();
-    });
-    function additions() {
-        var ipoCode =  localStorage.getItem("selectedIPO");
-        $("#ipo").val(ipoCode);
-        $("#appno").val('');
-        $("#orderno").val('');
-        $("#panno").val('');
-        $("#qty").val('');
-        $("#shares").val('');
-        $("#amt").val('');
-        $("#remarks").val('');
-        $("#shared_applied_price").val('');
-        $("#reject_remarks").val('');
-        $("#rule_code").val('');
-        $("#queryappno").text("");
-        $("#queryorderno").text("");
-        $("#querypanno").text("");
-        $("#queryremarks").text("");
-        $("#addlblstatus").text("");
-        var modal = new bootstrap.Modal(
-            document.getElementById('additionsModal')
-        );
-        modal.show();
-        var offer_code =  localStorage.getItem("selectedIPO");
-        //  loadaddrejlist(offer_code)
-            // addSave(offer_code);
-    }
-
-    function rejections() {
-            var ipoCode =  localStorage.getItem("selectedIPO");
-            $("#ripo").val(ipoCode);
-        $("#rappno").val('');
-        $("#rorderno").val('');
-        $("#rpanno").val('');
-        $("#rshares").val('');
-        $("#rshared_applied_price").val('');
-        $("#ramt").val('');
-        $("#additionremarks").val('');
-        var modal = new bootstrap.Modal(
-            document.getElementById('rejectionsModal')
-        );
-        modal.show();
-            var offer_code =  localStorage.getItem("selectedIPO");
-        //  loadaddrejlist(offer_code)
-    }
-
-    function SearchRejectionData(type,flag)
-    {
-        var ipoCode =  localStorage.getItem("selectedIPO");
-        var appNo = "";
-        var orderNo = "";
-        var panNo = "";
-        if(flag=="R")
-        {
-
-            if (type == "APP")
-                appNo = $("#appno").val().trim();
-
-            if (type == "ORDER")
-                orderNo = $("#orderno").val().trim();
-
-            if (type == "PAN")
-                panNo = $("#panno").val().trim();
-        }
-        else if(flag=="A")
-        {
-
-             if (type == "APP")
-                appNo = $("#rappno").val().trim();
-
-            if (type == "ORDER")
-                orderNo = $("#rorderno").val().trim();
-
-            if (type == "PAN")
-                panNo = $("#rpanno").val().trim();
-        }
-        if(appNo === "" && orderNo === "" && panNo === "") {
-            $.alert({
-                title: 'IPO Allotment',
-                content:"Enter Appl.No / Order No/ PAN No",
-                type: 'red',
-            });
-        }
-        else
-        {
-            $.ajax({
-                url: '@Url.Action("GetAddRejList", "Rejection")',
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    ipo_code: ipoCode,
-                    appl_no: appNo,
-                    order_no: orderNo,
-                    pan_no: panNo,
-                    flag: flag,
-                },
-                success: function (result) {
-                    console.log(result);
-                    var data = JSON.parse(result.data);
-                    if (data.Table && data.Table.length > 0) {
-                        if(data.Table[0].errors=="0"){
-                                $("#rappno").val('');
-                        $("#rorderno").val('');
-                        $("#rpanno").val('');
-                        $("#rshares").val('');
-                        $("#rshared_applied_price").val('');
-                        $("#ramt").val('');
-                        $("#additionremarks").val('');
-                        $("#appno").val('');
-                        $("#orderno").val('');
-                        $("#panno").val('');
-                        $("#qty").val('');
-                        $("#shares").val('');
-                        $("#amt").val('');
-                        $("#remarks").val('');
-                        $("#shared_applied_price").val('');
-                        $("#reject_remarks").val('');
-                        $("#addlblstatus").text("");
-                        $("#rule_code").val('');
-                                $.alert({
-                                    title: 'IPO Allotment',
-                                    content:"Invalid Appl.no.",
-                                    type: 'red',
-                                });
-                        }
-                        else if(data.Table[0].errors=="C")
-                        {
-                            $.alert({
-                            title: 'IPO Allotment',
-                            content:"Application moved to checker queue",
-                            type: 'red',
-                            });
-                        }
-                        else
-                        {
-                            if( data.Table1.length > 0)
-                            {
-                                if(flag=="R"){
-                                        $("#ipo").val(ipoCode);
-                                    populateDetails(data.Table1[0]);
-
-                                }
-                                else{
-                                        $("#ripo").val(ipoCode);
-                                    populateRDetails(data.Table1[0]);
-                                }
-
-                            }
-                            else
-                            {
-                                $("#rappno").val('');
-                                $("#rorderno").val('');
-                                $("#rpanno").val('');
-                                $("#rshares").val('');
-                                $("#rshared_applied_price").val('');
-                                $("#ramt").val('');
-                                $("#additionremarks").val('');
-                                $("#appno").val('');
-                                $("#orderno").val('');
-                                $("#panno").val('');
-                                $("#qty").val('');
-                                $("#shares").val('');
-                                $("#amt").val('');
-                                $("#remarks").val('');
-                                $("#shared_applied_price").val('');
-                                $("#reject_remarks").val('');
-                                $("#addlblstatus").text("");
-                                $("#rule_code").val('');
-                                if(flag=="A")
-                                {
-                                    $.alert({
-                                    title: 'IPO Allotment',
-                                    content:"Given Appl.no has already not valid",
-                                    type: 'red',
-                                });
-                                }
-                                else{
-                                    $.alert({
-                                    title: 'IPO Allotment',
-                                    content:"Given Appl.no has already valid",
-                                    type: 'red',
-                                });
-                                }
-                            }
-                        }
-                    } else {
-
-
-                    }
-
-                },
-                error: function () {
-                     $.alert({
-                            title: 'IPO Allotment',
-                            content:"Error while fetching data.",
-                            type: 'red',
-                     });
-
-                }
-            });
-        }
-
-    }
-
-    function addSave() {
-        var isValid = true;
-        var offer_code =  localStorage.getItem("selectedIPO");
-        var ipo = offer_code;
-        var appno = $('#appno').val().trim();
-        var orderno = $('#orderno').val().trim();
-        var panno = $('#panno').val().trim();
-        var qty = $('#shares').val().trim();
-        var shares = $('#shared_applied_price').val().trim();
-        var amt = $('#amt').val().trim();
-        var rule_code =$('#rule_code').val().split('/').pop().trim();
-        var remarks = $('#remarks').val().trim();
-        if(appno === "") {
-            $("#queryappno").text("Please Enter Appl. No");
-        isValid = false;
-        } else {
-            $("#queryappno").text("");
-        }
-        if(orderno === "") {
-            $("#queryorderno").text("Please Enter Order No.");
-        isValid = false;
-        } else {
-            $("#queryorderno").text("");
-        }
-        if(panno === "") {
-            $("#querypanno").text("Please Enter PAN No.");
-        isValid = false;
-        } else {
-            $("#querypanno").text("");
-        }
-        if(remarks === "") {
-            $("#queryremarks").text("Please Enter Remarks");
-        isValid = false;
-        } else {
-            $("#queryremarks").text("");
-        }
-        if (isValid) {
-            var mymodel = {
-                ipo_code: ipo,
-                applno: appno,
-                orderno: orderno,
-                panno: panno,
-                qty: qty,
-                shares: shares,
-                amt: amt,
-                rule_code:rule_code,
-                addremarks: remarks,
-                rejremarks: '',
-                audit_flag :'M'
-                };
-        try {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("saveAddRejDetails", "Rejection")',
-                dataType: 'json',
-                data: JSON.stringify(mymodel),
-                contentType: 'application/json; charset=utf-8',
-                success: function (response) {
-                    var result = JSON.parse(response._data);
-                    if (result.length > 0) {
-                        if (result[0].result == 1) {
-                            $.alert({
-                                title: 'IPO Allotment',
-                                content: "Added Sucessfully",
-                                type: 'green',
-                                buttons: {
-                                    ok: function () {
-                                        $('#additionsModal').modal('hide');
-                                            var offer_code =  localStorage.getItem("selectedIPO");
-                                        if(offer_code){
-                                            runrecon(false);
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                        else{
-                                $.alert({
-                                title: 'IPO Allotment',
-                                content:result[0].message,
-                                type: 'red',
-                            });
-                        }
-                    }
-                }
-            });
-            } catch (e) {
-                console.log(e)
-            }
-        }
-
-    }
-
-    function rejSave() {
-        var offer_code =  localStorage.getItem("selectedIPO");
-        var ipo = offer_code;
-        var appno = $('#rappno').val().trim();
-        var orderno = $('#rorderno').val().trim();
-        var panno = $('#rpanno').val().trim();
-        var qty = $('#rshares').val().trim();
-        var shares = $('#rshared_applied_price').val().trim();
-        var amt = $('#ramt').val().trim();
-        var rule_code =$('#rrule_code').val().trim();
-        var remarks = $('#additionremarks').val().trim();
-        var mymodel = {
-            ipo_code: ipo,
-            applno: appno,
-            orderno: orderno,
-            panno: panno,
-            qty: qty,
-            shares: shares,
-            amt: amt,
-            rule_code:rule_code,
-            addremarks: '',
-            rejremarks: remarks,
-            audit_flag :'M'
-            };
-        try {
-
-            if(appno === "" && orderno === "" && panno === "" && remarks=== "")
-            {
-                $.alert({
-                        title: 'IPO Allotment',
-                        content:"Empty data can't save",
-                        type: 'red',
-                });
-            }
-            else
-            {
-                $.ajax({
-                type: "POST",
-                url: '@Url.Action("saveAddRejDetails", "Rejection")',
-                dataType: 'json',
-                data: JSON.stringify(mymodel),
-                contentType: 'application/json; charset=utf-8',
-                success: function (response) {
-                    var result = JSON.parse(response._data);
-                    if (result.length > 0) {
-                        if (result[0].result == 1) {
-                            $.alert({
-                                title: 'IPO Allotment',
-                                //content: result[0].message,
-                                content: "Rejection Sucessfully",
-                                type: 'green',
-                                buttons: {
-                                    ok: function () {
-                                    $('#rejectionsModal').modal('hide');
-                                        var offer_code =  localStorage.getItem("selectedIPO");
-                                        if(offer_code){
-                                            runrecon(false);
-                                        }
-
-                                    }
-                                }
-                            });
-                        }
-                        else {
-                            $.alert({
-                                title: 'IPO Allotment',
-                                content:result[0].message,
-                                type: 'red',
-                            });
-                        }
-                    }
-                }
-            });
-            }
-
-        } catch (e) {
-                console.log(e)
-        }
-    }
-
-    function populateDetails(item) {
-        $("#appno").val(item.appl_no);
-        $("#orderno").val(item.order_no);
-        $("#panno").val(item.pan_no);
-        $("#shares").val(item.quantity);
-        $("#amt").val(item.total_amount);
-        $("#shared_applied_price").val(item.shared_applied_price);
-        $("#rule_code").val(item.rule_code);
-        $("#reject_remarks").val(item.rejected_reason);
-        $("#remarks").val("");
-        $("#addrule_disable").val(item.addrule_disable);
-        $("#addlblstatus").val("");
-        if (item.addrule_disable == "Y")
-        {
-        $("#addlblstatus").show().text("Exchanges Rejection applications are not changed");
-        $("#btnAddSave").hide();
-        } else {
-            $("#addlblstatus").hide().text("");
-            $("#btnAddSave").show();
-        }
-
-    }
-
-    function populateRDetails(item) {
-        $("#rappno").val(item.appl_no);
-        $("#rorderno").val(item.order_no);
-        $("#rpanno").val(item.pan_no);
-        $("#rshares").val(item.quantity);
-        $("#ramt").val(item.total_amount);
-        $("#rshared_applied_price").val(item.shared_applied_price);
-        $("#rremarks").val(item.rejected_reason);
-    }
-
-    function get_rule_code() {
-        var ipo_code =  localStorage.getItem("selectedIPO");
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("Getrulecode", "Rejection")',
-            data: {
-                ipo_code: ipo_code
-            },
-            dataType: "json",
-            success: function (response) {
-                if (!response.success) {
-                    return;
-                }
-                var data = JSON.parse(response.data);
-                $("#rrule_code").empty();
-                $("#rrule_code").append(
-                    $('<option>', {
-                        value: '',
-                        text: '-- Select --'
-                    })
-                );
-
-                $.each(data.Table, function (i, item) {
-                $("#rrule_code").append(
-                    $('<option>', {
-                        value: item.rule_code,
-                        text:  item.rule_name
-                    })
-                );
-            });
-
-            },
-            error: function (xhr) {
-                console.log("Error:", xhr.responseText);
-            }
-        });
-    }
-
-       function loadEntitlementGrid(data) {
+    function loadEntitlementGrid(data) {
 
         console.log("Loading Second Grid:", data.length);
 
@@ -1387,7 +609,7 @@
             sortable: true,
             filterable: true,
             resizable: true,
-
+            excel: { fileName: "Rights_Entitlement_Detail_Summary.xlsx", allPages: true, filterable: true },
             columns: [
                 {
                     field: "dp_client_id",
@@ -1407,7 +629,7 @@
                 {
                     field: "Depository",
                     title: "Depository",
-                    width: 100
+                    width: 130
                 },
                 {
                     field: "dp_id",
@@ -1422,27 +644,27 @@
                 {
                     field: "holding_qty",
                     title: "Shares Held",
-                    width: 110
+                    width: 140
                 },
                 {
                     field: "ratio",
                     title: "Rights Ratio",
-                    width: 110
+                    width: 140
                 },
                 {
                     field: "Entitlement",
                     title: "Entitlement",
-                    width: 110
+                    width: 130
                 },
                 {
                     field: "Additional_Applied",
                     title: "Additional Applied",
-                    width: 140
+                    width: 180
                 },
                 {
                     field: "Total_Applied",
                     title: "Total Applied",
-                    width: 120
+                    width: 150
                 },
                 {
                     field: "Allotted",
