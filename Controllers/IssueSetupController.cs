@@ -1,4 +1,5 @@
-﻿using IPOWeb.Models;
+﻿using DocumentFormat.OpenXml.EMMA;
+using IPOWeb.Models;
 using iTextSharp.text.pdf.qrcode;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -110,8 +111,8 @@ namespace IPOWeb.Controllers
                     }
                     if (response.IsSuccessStatusCode)
                     {
-                        string resultMessage = response.Content.ReadAsStringAsync().Result;
-                        var companyData = JsonConvert.DeserializeObject<object>(resultMessage);
+                        string resultMessage = response.Content.ReadAsStringAsync().Result;                        
+                        var companyData = JsonConvert.DeserializeObject<object>(resultMessage);                        
                         return Json(new { success = true, data = companyData });
                     }
                     else
