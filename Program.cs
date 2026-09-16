@@ -108,6 +108,17 @@ builder.Services.AddScoped<
     IPOWeb.Services.IIpoDataGatewayService,
     IPOWeb.Services.IpoDataGatewayService>();
 
+// Chat assistant (Anthropic Claude, tool-calling over existing backend report endpoints).
+// The API key is never read from appsettings.json - only from the environment.
+builder.Services.Configure<IPOWeb.Models.AnthropicOptions>(builder.Configuration.GetSection("Anthropic"));
+builder.Services.PostConfigure<IPOWeb.Models.AnthropicOptions>(o =>
+{
+    o.ApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY");
+    o.WorkspaceId = Environment.GetEnvironmentVariable("ANTHROPIC_WORKSPACE_ID");
+});
+builder.Services.AddHttpClient("Anthropic", c => c.BaseAddress = new Uri("https://api.anthropic.com/"));
+builder.Services.AddScoped<IPOWeb.Services.IClaudeChatService, IPOWeb.Services.ClaudeChatService>();
+
 
 var app = builder.Build();
 

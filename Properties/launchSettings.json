@@ -4,7 +4,9 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ANTHROPIC_API_KEY": "",
+        "ANTHROPIC_WORKSPACE_ID": ""
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5025"
