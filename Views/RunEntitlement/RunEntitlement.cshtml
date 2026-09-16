@@ -197,7 +197,7 @@
                             &nbsp;&nbsp;
                             <button type="button" onclick="exportdetailSummary()" class="btn btn-primary" id="btnGensummary" style="padding: 3px 25px;margin-top:28px; white-space: nowrap;">Export Detail Summary </button>
                             &nbsp;&nbsp;
-                            <button type="button" onclick="exportriallotment()" class="btn btn-primary" id="btnGensummary" style="padding: 3px 25px;margin-top:28px; white-space: nowrap;">Export Allotment </button>
+                            <button type="button" onclick="exportriallotment()" class="btn btn-primary" id="btnGensummary" style="padding: 3px 25px;margin-top:28px; white-space: nowrap;">Export CA File </button>
                             &nbsp;&nbsp;
                             @* @if (ViewBag.canAdd)
                             {
@@ -410,12 +410,13 @@
                             client_id: item[5],
                             holding_qty: item[6],
                             ratio: item[7],
-                            Entitlement: item[8],
-                            Additional_Applied: item[9],
-                            Total_Applied: item[10],
-                            Allotted: item[11],
-                            Unallotted: item[12],
-                            Status: item[13]
+                            eligible_entitlement_qty: item[8],                           
+                            fractional_qty: item[9],
+                            Additional_Applied: item[10],
+                            Total_Applied: item[11],
+                            Allotted: item[12],
+                            Unallotted: item[13],
+                            Status: item[14]
                         };
 
                     });
@@ -653,9 +654,14 @@
                     title: "Rights Ratio",
                     width: 140
                 },
+                 {
+                    field: "eligible_entitlement_qty",
+                    title: "Eligible Entitlement Qty",
+                    width: 140
+                },
                 {
-                    field: "Entitlement",
-                    title: "Entitlement",
+                    field: "fractional_qty",
+                    title: "Fractional Qty",
                     width: 130
                 },
                 {
