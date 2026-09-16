@@ -597,7 +597,7 @@ namespace IPOWeb.Controllers
                         // =========================
                         // 📄 FILE 1 → CDSL
                         // =========================
-                        var entry1 = archive.CreateEntry("ri_output_CDSL.txt");
+                        var entry1 = archive.CreateEntry("ri_output_NSDL.txt");
 
                         using (var writer = new StreamWriter(entry1.Open()))
                         {
@@ -612,7 +612,7 @@ namespace IPOWeb.Controllers
                                 writer.WriteLine(
                                     (row["dp_id"]?.ToString() ?? "").PadRight(10) +
                                     (row["client_id"]?.ToString() ?? "").PadRight(10) +
-                                    (row["raw_entitlement_qty"]?.ToString() ?? "").PadRight(150)
+                                    (row["eligible_entitlement_qty"]?.ToString() ?? "").PadRight(150)
                                 );
                             }
                         }
@@ -620,7 +620,7 @@ namespace IPOWeb.Controllers
                         // =========================
                         // 📄 FILE 2 → NSDL
                         // =========================
-                        var entry2 = archive.CreateEntry("ri_output_NSDL.txt");
+                        var entry2 = archive.CreateEntry("ri_output_CSDL.txt");
 
                         using (var writer = new StreamWriter(entry2.Open()))
                         {
@@ -635,7 +635,7 @@ namespace IPOWeb.Controllers
                                 writer.WriteLine(
                                     (row["dp_id"]?.ToString() ?? "").PadRight(10) +
                                     (row["client_id"]?.ToString() ?? "").PadRight(10) +
-                                    (row["raw_entitlement_qty"]?.ToString() ?? "").PadRight(150)
+                                    (row["eligible_entitlement_qty"]?.ToString() ?? "").PadRight(150)
                                 );
                             }
                         }

@@ -1,0 +1,450 @@
+@{
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Bulk Mailing</title>
+    <style>
+        #mergeTags { font-size: 12px; color: #666; margin-top: 4px; }
+        #mergeTags .tag { display: inline-block; background: #eef; border: 1px solid #ccd; border-radius: 4px; padding: 1px 6px; margin: 2px; cursor: pointer; }
+        #sendStatus { font-size: 13px; }
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini fixed">
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="card-body">
+                @* <h5><i class="bx bx-envelope"></i>&nbsp;Bulk Mailing</h5>
+                <p style="font-size:12px;color:#666;">Send a personalized bulk email (rights issue notice, allotment intimation, or anything else) to every recipient returned for an offer code. Reference any recipient field in the subject/body as <code>{{params.field_name}}</code>.</p>
+                <hr /> *@
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label class="form-label">IPO Name</label>
+                        <input type="text" class="form-control" id="iponame" readonly />
+                        <input type="hidden" id="iponames" readonly />
+                        <input type="text" class="form-control" id="ipocode" hidden />
+                    </div>
+                    @* <div class="col-sm-4">
+                        <label class="form-label">Mail Type <span style="font-size:11px;color:#999;">(label only, for your reference)</span></label>
+                        <input type="text" class="form-control" id="mailType" placeholder="e.g. Rights Issue Notice, Allotment Intimation" />
+                    </div> *@
+                    <div class="col-sm-5">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-outline-secondary form-control" id="btnPreview" onclick="previewRecipients()">Preview Mail Template</button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px;">
+                    <div class="col-sm-12">
+                        <span id="recipientCount" style="font-size:13px;"></span>
+                        <div id="mergeTags"></div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:12px;">
+                    <div class="col-sm-10">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="mailSubject" placeholder="e.g. Rights Issue Entitlement for {{params.name}}" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;display:none;">
+                    <div class="col-sm-10">
+                        <label class="form-label">Message (HTML)</label>
+                        <textarea class="form-control"
+                                  id="mailBody"
+                                  rows="10"
+                                  placeholder="HTML email template..."></textarea>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-sm-10">
+                        <label class="form-label">Email Preview</label>
+
+                        <div id="mailPreview"
+                             style="border:1px solid #ddd;
+                    padding:15px;
+                    background:#f5f5f5;
+                    min-height:200px;overflow: scroll;height: 100px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-sm-10">
+                        <button type="button" class="btn btn-primary" id="btnSend" onclick="sendBulkMail()" style="padding:3px 25px;">Send</button>
+                        <span id="sendStatus" style="margin-left:15px;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        $('#navhead').text('Bulk Mailing');
+        var ipoName = localStorage.getItem("selectedIPOText");
+        var ipocode = localStorage.getItem("selectedIPO");
+        $("#iponame").val(ipoName);
+        $("#ipocode").val(ipocode);
+    });
+
+    function previewRecipients() {
+         generateRightsIssueTemplate();
+        // var ipocode = $("#ipocode").val();
+        // var in_action = "Entitlement";
+        // if (!ipocode) {
+        //     $("#recipientCount").css("color", "red").text("Select an IPO first.");
+        //     return;
+        // }
+        // customAjax({
+        //     type: "GET",
+        //     url: '@Url.Action("GetRecipients", "Mailing")',
+        //     data: { offer_code: ipocode, in_action: in_action},
+        //     success: function (response) {
+        //         console.log("Emailres:,", response);
+        //         if (!response || !response.success) {
+        //             $("#recipientCount").css("color", "red").text((response && response.message) || "Failed to load recipients.");
+        //             $("#mergeTags").empty();
+        //             return;
+        //         }
+        //         $("#recipientCount").css("color", "green").text(response.count + " recipient(s) found.");
+        //         var $tags = $("#mergeTags").empty();
+        //         (response.sampleColumns || []).forEach(function (col) {
+        //             var tag = "{{params." + col + "}}";
+        //             var $t = $('<span class="tag"></span>').text(tag).attr("title", "Click to copy").on("click", function () {
+        //                 navigator.clipboard && navigator.clipboard.writeText(tag);
+        //             });
+        //             $tags.append($t);
+        //         });
+        //         generateRightsIssueTemplate();
+        //     },
+        //     error: function () {
+        //         $("#recipientCount").css("color", "red").text("Failed to load recipients.");
+        //     }
+        // });
+    }
+
+       function generateRightsIssueTemplate() {
+
+        var template = $("#rightsIssueTemplate").html();
+
+        // Show HTML source in textarea
+        $("#mailBody").val(template);
+
+        // Render HTML preview
+        $("#mailPreview").html(template);
+    }
+
+    function sendBulkMail() {
+        var ipocode = $("#ipocode").val();
+        var subject = $("#mailSubject").val().trim();
+        var body = $("#mailBody").val().trim();
+        var $status = $("#sendStatus");
+        var in_action = "Entitlement";
+
+        if (!ipocode) { $status.css("color", "red").text("Select an IPO first."); return; }
+        if (!subject || !body) { $status.css("color", "red").text("Subject and message are required."); return; }
+
+        $("#btnSend").prop("disabled", true);
+        $status.css("color", "#666").text("Sending...");
+
+        customAjax({
+            type: "POST",
+            url: '@Url.Action("SendBulkMail", "Mailing")',
+            data: JSON.stringify({
+                OfferCode: ipocode,
+                MailType: $("#mailType").val(),
+                Subject: subject,
+                HtmlContent: body,
+                in_action:in_action
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                 console.log("Send Response:", response);
+                $("#btnSend").prop("disabled", false);
+                if (!response) { $status.css("color", "red").text("Failed to send."); return; }
+                if (response.success) {
+                    $status.css("color", "green").text(
+                        "Sent " + response.sentCount + " of " + response.totalRecipients +
+                        (response.failedCount ? (" (" + response.failedCount + " failed)") : "") + " Successfully."
+                    );
+                } else {
+                    $status.css("color", "red").text((response.message) || ((response.errors || []).join("; ")) || "Failed to send.");
+                }
+            },
+            error: function () {
+                $("#btnSend").prop("disabled", false);
+                $status.css("color", "red").text("Failed to send.");
+            }
+        });
+    }
+</script>
+
+<script type="text/template" id="rightsIssueTemplate">
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rights Entitlement Intimation</title>
+    </head>
+
+    <body style="margin:0; padding:0; background-color:#f5f5f5; font-family:Arial, Helvetica, sans-serif; color:#333333;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="background-color:#f5f5f5; padding:20px 0;">
+        <tr>
+            <td align="center">
+
+                <table width="700" cellpadding="0" cellspacing="0" border="0"
+                       style="max-width:700px; width:100%; background-color:#ffffff; border:1px solid #dddddd;">
+
+                    <tr>
+                        <td style="padding:25px 30px; background-color:#365b9f; color:#ffffff;">
+                            <h2 style="margin:0; font-size:22px;color:#fff">
+                                Intimation of Rights Entitlement
+                            </h2>
+
+                            <p style="margin:8px 0 0 0; font-size:14px;">
+                                {{params.issuer_name}}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:30px;">
+
+                            <p style="margin-top:0;">
+                                Dear Investor,
+                            </p>
+
+                            <p>
+                                We wish to inform you that pursuant to the Rights Issue of
+                                <strong>{{params.issuer_name}}</strong>,
+                                you are entitled to apply for
+                                <strong>{{params.entitlement_shares}}</strong>
+                                equity shares of the Company at an issue price of
+                                <strong>INR {{params.offer_facevalue}}</strong>
+                                per share, based on your shareholding as on the Record Date.
+                            </p>
+
+                            <h3 style="margin-top:25px; margin-bottom:10px; color:#365b9f;">
+                                Rights Issue Details
+                            </h3>
+
+                            <table width="100%" cellpadding="8" cellspacing="0" border="1"
+                                   style="border-collapse:collapse; border:1px solid #dddddd; font-size:14px;">
+
+                                <tr>
+                                    <td style="font-weight:bold; width:45%; background-color:#f5f7fa;">
+                                        Issuer Name
+                                    </td>
+                                    <td>
+                                        {{params.issuer_name}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        ISIN
+                                    </td>
+                                    <td>
+                                        {{params.isin}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Record Date
+                                    </td>
+                                    <td>
+                                       {{params.record_date}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Rights Issue Opening Date
+                                    </td>
+                                    <td>
+                                        {{params.opening_date}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Rights Issue Closing Date
+                                    </td>
+                                    <td>
+                                        {{params.closing_date}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Rights Issue Price
+                                    </td>
+                                    <td>
+                                        INR {{params.offer_facevalue}} per share
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Rights Issue Premium
+                                    </td>
+                                    <td>
+                                        INR {{params.offer_premiun}} per share
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Rights Entitlement Ratio
+                                    </td>
+                                    <td>
+                                        {{params.ratio}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Your Shares Held as on Record Date
+                                    </td>
+                                    <td>
+                                        {{params.shares_held}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Your Rights Entitlement
+                                    </td>
+                                    <td>
+                                        <strong>{{params.entitlement_shares}}</strong> shares
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold; background-color:#f5f7fa;">
+                                        Entitlement Value
+                                    </td>
+                                    <td>
+                                        INR {{params.entitlement_value}}
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                            <p style="margin-top:25px;">
+                                You may apply for your Rights Entitlement, and where permitted
+                                under the terms of the Rights Issue, you may also apply for
+                                additional shares.
+                            </p>
+
+                            <p>
+                                To submit your Rights Issue application, please visit:
+                            </p>
+
+                            <p>
+                                <a href="[Application Portal Link]"
+                                   style="display:inline-block;
+                                          padding:12px 20px;
+                                          background-color:#365b9f;
+                                          color:#ffffff;
+                                          text-decoration:none;
+                                          border-radius:4px;
+                                          font-weight:bold;">
+                                    Apply for Rights Issue
+                                </a>
+                            </p>
+
+                            <p style="margin-top:25px;">
+                                You are requested to read the Letter of Offer / Offer Document
+                                and the applicable terms and conditions carefully before
+                                submitting your application.
+                            </p>
+
+                            <p>
+                                Please note that the Rights Entitlement mentioned above is
+                                subject to the terms of the Rights Issue and applicable
+                                regulatory requirements. The final allotment of shares,
+                                including any additional shares applied for, will be subject
+                                to the Basis of Allotment approved for the Rights Issue.
+                            </p>
+
+                            <h3 style="margin-top:25px; margin-bottom:10px; color:#365b9f;">
+                                Contact Information
+                            </h3>
+
+                            <table width="100%" cellpadding="6" cellspacing="0" border="0"
+                                   style="font-size:14px;">
+
+                                <tr>
+                                    <td style="font-weight:bold; width:35%;">
+                                        Registrar &amp; Share Transfer Agent
+                                    </td>
+                                    <td>
+                                        {{params.rta_name}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold;">
+                                        Email
+                                    </td>
+                                    <td>
+                                        <a href="mailto:{{params.rta_email}}">
+                                            {{params.rta_email}}
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold;">
+                                        Phone
+                                    </td>
+                                    <td>
+                                        {{params.rta_contact}}
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                            <p style="margin-top:30px; margin-bottom:5px;">
+                                Regards,
+                            </p>
+
+                            <p style="margin-top:0;">
+                                <strong>{{params.rta_name}}</strong><br>
+                                Registrar &amp; Share Transfer Agent<br>
+                                For and on behalf of {{params.issuer_name}}
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:15px 30px;
+                                   background-color:#f5f5f5;
+                                   border-top:1px solid #dddddd;
+                                   text-align:center;
+                                   font-size:11px;
+                                   color:#777777;">
+
+                            This is a system-generated communication.
+                            Please do not reply to this email.
+
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+    </body>
+    </html>
+</script>

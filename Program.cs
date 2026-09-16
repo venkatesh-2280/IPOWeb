@@ -52,6 +52,7 @@ builder.Services.AddRazorPages();
 builder.Services.Configure<IPOWeb.Models.AuditLoggingOptions>(builder.Configuration.GetSection("AuditLogging"));
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 // Register audit services (ApiAuditStore) and middleware to capture correlation id
 builder.Services.AddAuditLogging();
 
@@ -66,7 +67,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         //options.AccessDeniedPath = "/Login/Denied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(authTimeout);
         // options.ExpireTimeSpan = TimeSpan.FromHours(12);
-        options.SlidingExpiration = false;
+        options.SlidingExpiration = true;
     });
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
@@ -90,6 +91,23 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     // you can add its IP here for stronger security.
     // options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
 });
+
+// Generic bulk-mail plugin (Brevo)
+builder.Services.Configure<IPOWeb.Models.BrevoOptions>(
+    builder.Configuration.GetSection("Brevo"));
+
+builder.Services.PostConfigure<IPOWeb.Models.BrevoOptions>(o =>
+    o.ApiKey = Environment.GetEnvironmentVariable("BREVO_API_KEY"));
+
+builder.Services.AddScoped<
+    IPOWeb.Services.IBrevoMailService,
+    IPOWeb.Services.BrevoMailService>();
+
+// IPO Data Gateway required by MailingController
+builder.Services.AddScoped<
+    IPOWeb.Services.IIpoDataGatewayService,
+    IPOWeb.Services.IpoDataGatewayService>();
+
 
 var app = builder.Build();
 

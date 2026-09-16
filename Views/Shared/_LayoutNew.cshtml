@@ -444,7 +444,7 @@
     <script src="~/Scripts/jquery-confirm.min.js"></script>
     <link href="~/Content/css/jquery-confirm.min.css" rel="stylesheet" />
 
-    @*/*dashboard chart*/*@
+    @*/*dashboard chart*@
     @*<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -1233,7 +1233,7 @@
                      });
                  }
              });
-        }*/
+        }
 
         function showchangepasswordscreen() {
             
@@ -2533,9 +2533,19 @@
                            //     );
                            // });
                                    $.each(filteredData, function (index, item) {
+                                        // $ddl.append(
+                                        //     '<option value="' + item.offer_code + '" data-offer-type="' + item.offer_type + '">' +
+                                        //         item.offer_code + ' - ' + item.client_name +
+                                        //     '</option>'
+                                        // );
+                                            var offerText = item.offer_code + ' - ' +
+                                                        item.client_name + ' - ' +
+                                                        item.offer_type;
+
                                         $ddl.append(
-                                            '<option value="' + item.offer_code + '" data-offer-type="' + item.offer_type + '">' +
-                                                item.offer_code + ' - ' + item.client_name +
+                                            '<option value="' + item.offer_code +
+                                            '" data-offer-type="' + item.offer_type + '">' +
+                                                offerText +
                                             '</option>'
                                         );
                                     });
@@ -2543,6 +2553,7 @@
                            var offer_codes =localStorage.getItem("selectedIPO");
                            if (!savedIPO){
                                 offer_codes = filteredData[0].offer_code;
+                                offer_type = filteredData[0].offer_type;
                                 //localStorage.setItem("selectedIPO", firstIPO);
                            } 
                            console.log("Before set :", $ddl.val()); 
