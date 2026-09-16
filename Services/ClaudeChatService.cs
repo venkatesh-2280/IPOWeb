@@ -28,6 +28,9 @@ namespace IPOWeb.Services
             "rejection (technical rejection, PAN mismatch, invalid DP), and investor categories " +
             "IND/Retail, HNI/NII (individual and corporate), QIB, NRI (split into <=10L and >10L slabs), " +
             "Market Maker (MM), and Employee. " +
+            "For Rights Offers (offer_type = Rights Offer), users may also ask for a specific investor's " +
+            "Rights Issue entitlement (how many shares a PAN is entitled to buy) - use get_entitlement_by_pan " +
+            "for these, which needs both the offer_code and the investor's PAN. " +
             "If the user names a company or IPO instead of giving an explicit offer code, call find_offer_code " +
             "first to resolve it before calling any other tool. " +
             "Always answer using the data returned by the tools - never guess numbers. " +
@@ -243,6 +246,46 @@ namespace IPOWeb.Services
                     var data = await _gateway.GetBidUpiAsync(offerCode).ConfigureAwait(false);
                     return TruncateJson(data);
                 }
+                case "get_entitlement_by_pan":
+                {
+                    var offerCode = RequireString(input, "offer_code");
+                    var pan = RequireString(input, "pan");
+                    var data = await _gateway.GetRightsEntitlementAsync(offerCode).ConfigureAwait(false);
+                    var details = data?["details"] as JArray ?? new JArray();
+
+                    var match = details.FirstOrDefault(row =>
+                        row is JArray arr && arr.Count > 1 &&
+                        string.Equals((string)arr[1], pan, StringComparison.OrdinalIgnoreCase));
+
+                    if (match is not JArray row2)
+                    {
+                        return JsonConvert.SerializeObject(new
+                        {
+                            found = false,
+                            message = $"No Rights Issue entitlement record found for PAN {pan} under offer {offerCode}."
+                        });
+                    }
+
+                    return JsonConvert.SerializeObject(new
+                    {
+                        found = true,
+                        folioOrBoId = row2[0],
+                        pan = row2[1],
+                        investorName = row2[2],
+                        depository = row2[3],
+                        dpId = row2[4],
+                        clientId = row2[5],
+                        holdingQty = row2[6],
+                        ratio = row2[7],
+                        eligibleEntitlementQty = row2[8],
+                        fractionalQty = row2[9],
+                        additionalApplied = row2[10],
+                        totalApplied = row2[11],
+                        allotted = row2[12],
+                        unallotted = row2[13],
+                        status = row2[14]
+                    });
+                }
                 default:
                     return JsonConvert.SerializeObject(new { error = "Unknown tool: " + toolName });
             }
@@ -383,6 +426,24 @@ namespace IPOWeb.Services
                             ["offer_code"] = new JObject { ["type"] = "string", ["description"] = "IPO offer code, e.g. CL00037-41." }
                         },
                         ["required"] = new JArray("offer_code")
+                    }
+                },
+                new JObject
+                {
+                    ["name"] = "get_entitlement_by_pan",
+                    ["description"] = "Rights Issue entitlement details for one investor, looked up by PAN, for a given Rights Offer. " +
+                        "Returns holding quantity, rights ratio, eligible entitlement quantity, fractional quantity, additional applied, " +
+                        "total applied, allotted, unallotted, and status. Use for 'how many shares is PAN X entitled to' or similar " +
+                        "for a Rights Offer offer_code. Entitlement must already have been run for the offer for data to exist.",
+                    ["input_schema"] = new JObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JObject
+                        {
+                            ["offer_code"] = new JObject { ["type"] = "string", ["description"] = "Rights Offer code, e.g. CL00037-41." },
+                            ["pan"] = new JObject { ["type"] = "string", ["description"] = "Investor's PAN number, e.g. ABCDE1234F." }
+                        },
+                        ["required"] = new JArray("offer_code", "pan")
                     }
                 }
             };

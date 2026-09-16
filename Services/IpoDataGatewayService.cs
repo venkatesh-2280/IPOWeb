@@ -229,6 +229,12 @@ namespace IPOWeb.Services
             return JToken.Parse(resultMessage);
         }
 
+        public async Task<JToken> GetRightsEntitlementAsync(string offerCode)
+        {
+            var resultMessage = await SendAsync("GetRightsEntitlement?offer_code=" + Uri.EscapeDataString(offerCode)).ConfigureAwait(false);
+            return JToken.Parse(resultMessage);
+        }
+
         private static List<Dictionary<string, object>> DataTableToList(DataTable table)
         {
             var rows = new List<Dictionary<string, object>>();

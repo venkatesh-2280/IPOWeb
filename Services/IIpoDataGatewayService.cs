@@ -17,5 +17,6 @@ namespace IPOWeb.Services
         Task<List<Dictionary<string, object>>> GetRejectionDetailAsync(string offerCode, string ruleCode);
         Task<JToken> GetBidBankAsync(string offerCode, string category, string reconType);
         Task<JToken> GetBidUpiAsync(string offerCode);
+        Task<JToken> GetRightsEntitlementAsync(string offerCode);
     }
 }
